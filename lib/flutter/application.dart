@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:note_sound/flutter/route/router.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-class Application extends StatelessWidget {
+part 'application.g.dart';
+
+@Riverpod(keepAlive: true)
+GoRouter goRouter(GoRouterRef ref) {
+  return GoRouter(
+    routes: $appRoutes,
+    initialLocation: '/',
+    debugLogDiagnostics: true,
+  );
+}
+
+class Application extends ConsumerWidget {
   const Application({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
       title: 'Note Sound',
       theme: ThemeData(
@@ -16,18 +29,9 @@ class Application extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [
-        Locale('ja'),
-      ],
-      routerConfig: GoRouter(routes: $appRoutes),
-      builder: (context, child) {
-        return child ?? const SizedBox.shrink();
-      },
+      localizationsDelegates: L10n.localizationsDelegates,
+      supportedLocales: L10n.supportedLocales,
+      routerConfig: ref.watch(goRouterProvider),
     );
   }
 }
