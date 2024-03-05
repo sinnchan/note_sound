@@ -1,5 +1,10 @@
 {
   "pitch_traning": "Pitch Traning",
   "chord_traning": "Chord Traning",
-  "debug_page": "🐛 DEBUG PAGE 🐛"
+  "debug_page": "🐛 DEBUG PAGE 🐛",
+  "quiz_mode": "Quiz mode",
+  "listening_mode": "Listening mode",
+  "select_notes": "Select notes",
+  "quiz_count": "Quiz count",
+  "start": "Start"
 }
