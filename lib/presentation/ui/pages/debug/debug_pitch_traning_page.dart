@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
-import 'package:note_sound/flutter/util/l10n_mixin.dart';
-import 'package:note_sound/flutter/widgets/expandable/expandable_card.dart';
+import 'package:note_sound/presentation/util/l10n_mixin.dart';
+import 'package:note_sound/presentation/ui/widgets/expandable/expandable_card.dart';
 
 class DebugPitchTraningPage extends HookWidget {
   const DebugPitchTraningPage({super.key});

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:note_sound/flutter/route/router.dart';
-import 'package:note_sound/flutter/util/l10n_mixin.dart';
+import 'package:note_sound/presentation/route/router.dart';
+import 'package:note_sound/presentation/util/l10n_mixin.dart';
 
 class DebugTopPage extends HookConsumerWidget {
   const DebugTopPage({super.key});
