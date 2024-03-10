@@ -1,0 +1,4 @@
+enum Accidental {
+  sharp,
+  flat,
+}
