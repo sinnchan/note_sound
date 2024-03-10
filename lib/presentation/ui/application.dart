@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:note_sound/flutter/route/router.dart';
+import 'package:note_sound/presentation/route/router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'application.g.dart';

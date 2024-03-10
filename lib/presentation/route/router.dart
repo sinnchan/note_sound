@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:note_sound/flutter/pages/debug/pitch_traning.dart';
-import 'package:note_sound/flutter/pages/debug/top.dart';
-import 'package:note_sound/flutter/pages/top_page.dart';
+import 'package:note_sound/presentation/ui/pages/debug/pitch_traning.dart';
+import 'package:note_sound/presentation/ui/pages/debug/top.dart';
+import 'package:note_sound/presentation/ui/pages/top_page.dart';
 
 part 'router.g.dart';
 

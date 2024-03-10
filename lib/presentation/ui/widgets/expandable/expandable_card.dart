@@ -1,6 +1,6 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
-import 'package:note_sound/flutter/widgets/expandable/expandable_notifier_builder.dart';
+import 'package:note_sound/presentation/ui/widgets/expandable/expandable_notifier_builder.dart';
 
 class ExpandableCard extends StatelessWidget {
   const ExpandableCard({
