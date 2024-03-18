@@ -1,19 +1,18 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_sound/domain/models/note/accidental.dart';
-import 'package:note_sound/domain/models/note/note_number.dart';
 
 part 'note.freezed.dart';
 part 'note.g.dart';
 
-const NoteNumber _maxNoteNum = 127;
-const NoteNumber _minNoteNum = 0;
+const int _maxNoteNum = 127;
+const int _minNoteNum = 0;
 const int _semitonePerOctave = 12;
 
 @freezed
 class Note with _$Note {
-  @Assert('assert(_minNoteNum <= number && number <= _maxNoteNum)')
+  @Assert('_minNoteNum <= number && number <= _maxNoteNum')
   const factory Note({
-    required NoteNumber number,
+    required int number,
   }) = _Note;
 
   factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);

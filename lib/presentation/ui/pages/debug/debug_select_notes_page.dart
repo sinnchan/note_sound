@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:note_sound/presentation/util/l10n_mixin.dart';
 import 'package:note_sound/domain/models/note/note.dart';
+import 'package:note_sound/presentation/util/l10n_mixin.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'debug_select_notes_page.freezed.dart';
@@ -47,9 +47,7 @@ class DebugSelectNotesPage extends HookConsumerWidget {
       appBar: AppBar(
         title: Text(context.l10n.select_notes),
       ),
-      body: const Column(
-        children: [],
-      ),
+      body: const Center(),
     );
   }
 }

@@ -6,5 +6,6 @@
   "listening_mode": "聞き流しモード",
   "select_notes": "ノートを選択",
   "quiz_count": "出題数",
-  "start": "開始"
+  "start": "開始",
+  "sound_player": "サウンドプレーヤー"
 }

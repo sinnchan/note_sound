@@ -17,6 +17,11 @@ class DebugTopPage extends HookConsumerWidget {
         children: [
           _divider(),
           _button(
+            text: context.l10n.sound_player,
+            onTap: () => DebugSoundPlayerRoute().go(context),
+          ),
+          _divider(),
+          _button(
             text: context.l10n.pitch_traning,
             onTap: () => DebugPitchTraningRoute().go(context),
           ),
@@ -36,7 +41,9 @@ class DebugTopPage extends HookConsumerWidget {
     required void Function()? onTap,
   }) {
     return Material(
-      color: onTap == null ? Theme.of(useContext()).disabledColor : null,
+      color: onTap == null
+          ? Theme.of(useContext()).disabledColor.withOpacity(0.2)
+          : null,
       child: InkWell(
         onTap: onTap,
         child: Padding(
