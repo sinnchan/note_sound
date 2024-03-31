@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:logger/logger.dart' as log;
 import 'package:logger/web.dart';
 import 'package:note_sound/domain/models/logger/i_logger.dart';
@@ -8,9 +5,9 @@ import 'package:note_sound/domain/models/logger/i_logger.dart';
 class CustomLogger implements ILogger {
   CustomLogger(this.name);
 
-  final String? name;
+  final String name;
   late final _logger = log.Logger(
-    printer: _Printer(name),
+    printer: CustomPrinter(name: name),
   );
 
   @override
@@ -44,37 +41,46 @@ class CustomLogger implements ILogger {
   }
 }
 
-class _Printer extends LogPrinter {
-  _Printer(this._name);
-  final String? _name;
+class CustomPrinter extends PrettyPrinter {
+  final String name;
+  final _emojis = const {
+    Level.trace: '🔈',
+    Level.debug: '🐛',
+    Level.info: '💡',
+    Level.warning: '⚠️',
+    Level.error: '⛔',
+    Level.fatal: '👾',
+  };
+
+  CustomPrinter({
+    required this.name,
+    super.stackTraceBeginIndex = 2,
+    super.methodCount = 0,
+    super.errorMethodCount = 12,
+    super.lineLength = 2,
+    super.colors = false,
+    super.printEmojis = false,
+    super.printTime = false,
+    super.excludeBox = const {},
+    super.noBoxingByDefault = false,
+    super.excludePaths = const [],
+    super.levelColors,
+    super.levelEmojis,
+  });
 
   @override
   List<String> log(LogEvent event) {
-    final colors = PrettyPrinter.defaultLevelColors[event.level];
-    final emojies = {
-      ...PrettyPrinter.defaultLevelEmojis,
-      Level.trace: '🔉',
-    };
-    final emoji = emojies[event.level];
-    final color = colors ?? const AnsiColor.none();
-    final name = _name.letWithElse((name) => '[$name]', orElse: '');
-    return stringifyMessage(event.message)
-        .split('\n')
-        .map((e) => color('[$emoji]$name $e'))
-        .toList();
-  }
+    final message = super.log(event);
+    final colors = PrettyPrinter.defaultLevelColors[event.level]!;
+    final emoji = _emojis[event.level]!;
 
-  String stringifyMessage(dynamic message) {
-    final finalMessage = message is Function ? message() : message;
-    if (finalMessage is Map || finalMessage is Iterable) {
-      final encoder = JsonEncoder.withIndent('  ', toEncodableFallback);
-      return encoder.convert(finalMessage);
+    if (message.length == 3) {
+      return [colors('[$emoji][$name]${message[1].substring(1)}')];
     } else {
-      return finalMessage.toString();
+      return [
+        '${message[0]}[$name]',
+        ...message.skip(1),
+      ].map((e) => colors('[$emoji] $e')).toList();
     }
-  }
-
-  Object toEncodableFallback(dynamic object) {
-    return object.toString();
   }
 }

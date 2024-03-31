@@ -6,5 +6,6 @@
   "listening_mode": "Listening mode",
   "select_notes": "Select notes",
   "quiz_count": "Quiz count",
-  "start": "Start"
+  "start": "Start",
+  "sound_player": "Sound player"
 }
