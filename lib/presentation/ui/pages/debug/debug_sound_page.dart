@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:note_sound/domain/models/logger/logger.dart';
-import 'package:note_sound/domain/models/note/note.dart';
-import 'package:note_sound/domain/models/pcm/value/pcm_velocity.dart';
-import 'package:note_sound/presentation/shared_providers/pcm_player_provider.dart';
-import 'package:note_sound/presentation/shared_providers/pcm_synthesizer_provider.dart';
+import 'package:note_sound/domain/logger/logger.dart';
+import 'package:note_sound/domain/sound/note.dart';
+import 'package:note_sound/infrastructure/sound/player/player.dart';
+import 'package:note_sound/infrastructure/sound/synthesizer/synthesizer.dart';
+import 'package:note_sound/infrastructure/sound/value/velocity.dart' as sound;
 import 'package:note_sound/presentation/util/l10n_mixin.dart';
 
 class DebugSoundPlayerPage extends HookConsumerWidget with ClassLogger {
@@ -13,19 +12,9 @@ class DebugSoundPlayerPage extends HookConsumerWidget with ClassLogger {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final player = ref.watch(pcmPlayerProvider);
-    final isPlaying = useMemoized(
-      () => player.value?.isPlaying ?? false,
-      [player.value?.isPlaying],
-    );
-
-    useEffect(
-      () {
-        player.whenOrNull(data: (player) => player.play());
-        return null;
-      },
-      [player],
-    );
+    final playerProvider = soundPlayerProvider();
+    final player = ref.watch(playerProvider.notifier);
+    final playerState = ref.watch(playerProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,8 +29,8 @@ class DebugSoundPlayerPage extends HookConsumerWidget with ClassLogger {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   ElevatedButton(
-                    onPressed: player.mapOrNull(
-                      data: (player) => !isPlaying ? player.value.play : null,
+                    onPressed: playerState.mapOrNull(
+                      data: (s) => s.value.isPlaying ? null : player.play,
                       error: (e) {
                         logger.e(e.error);
                         return null;
@@ -50,8 +39,8 @@ class DebugSoundPlayerPage extends HookConsumerWidget with ClassLogger {
                     child: const Text('PLAY'),
                   ),
                   ElevatedButton(
-                    onPressed: player.mapOrNull(
-                      data: (player) => isPlaying ? player.value.play : null,
+                    onPressed: playerState.mapOrNull(
+                      data: (s) => s.value.isPlaying ? player.pause : null,
                       error: (e) {
                         logger.e(e.error);
                         return null;
@@ -73,7 +62,7 @@ class DebugSoundPlayerPage extends HookConsumerWidget with ClassLogger {
                   return synthKey(
                     ref,
                     Note(number: index),
-                    const PcmVelocity(value: 127),
+                    const sound.Velocity(value: 127),
                   );
                 },
               ),
@@ -84,8 +73,8 @@ class DebugSoundPlayerPage extends HookConsumerWidget with ClassLogger {
     );
   }
 
-  Widget synthKey(WidgetRef ref, Note note, PcmVelocity velocity) {
-    final synth = ref.read(pcmSynthesizerProvider);
+  Widget synthKey(WidgetRef ref, Note note, sound.Velocity velocity) {
+    final synth = ref.read(synthesizerProvider);
 
     return Material(
       color: note.isBlackKey ? Colors.black.withOpacity(0.5) : null,

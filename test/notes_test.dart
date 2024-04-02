@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:note_sound/domain/models/note/accidental.dart';
-import 'package:note_sound/domain/models/note/note.dart';
+import 'package:note_sound/domain/sound/accidental.dart';
+import 'package:note_sound/domain/sound/note.dart';
 
 void main() {
   group('notes', () {

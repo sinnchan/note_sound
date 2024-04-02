@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:note_sound/domain/models/note/note.dart';
+import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/presentation/util/l10n_mixin.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

@@ -1,6 +1,6 @@
 import 'package:logger/logger.dart' as log;
 import 'package:logger/web.dart';
-import 'package:note_sound/domain/models/logger/i_logger.dart';
+import 'package:note_sound/domain/logger/i_logger.dart';
 
 class CustomLogger implements ILogger {
   CustomLogger(this.name);

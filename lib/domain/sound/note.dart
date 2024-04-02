@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:note_sound/domain/models/note/accidental.dart';
+import 'package:note_sound/domain/sound/accidental.dart';
 
 part 'note.freezed.dart';
 part 'note.g.dart';
