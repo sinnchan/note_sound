@@ -26,9 +26,14 @@ dependencies:
   dart_scope_functions: ^0.1.4
   dart_melty_soundfont: ^1.1.11
   flutter_pcm_sound: ^1.2.0
-  isar: ^3.1.0+1
   logger: ^2.1.0
   collection: ^1.18.0
+  isar:
+    hosted: https://pub.isar-community.dev
+    version: ^4.0.2
+  isar_flutter_libs:
+    hosted: https://pub.isar-community.dev
+    version: ^4.0.2
 
 dev_dependencies:
   flutter_test:
