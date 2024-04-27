@@ -4,38 +4,56 @@ import 'package:note_sound/domain/sound/accidental.dart';
 part 'note.freezed.dart';
 part 'note.g.dart';
 
-const int _maxNoteNum = 127;
-const int _minNoteNum = 0;
-const int _semitonePerOctave = 12;
+typedef NoteNumber = int;
 
 @freezed
 class Note with _$Note {
-  @Assert('_minNoteNum <= number && number <= _maxNoteNum')
+  static const NoteNumber max = 127;
+  static const NoteNumber min = 0;
+  static const NoteNumber semitonePerOctave = 12;
+
+  @Assert('Note.min <= number && number <= Note.max')
   const factory Note({
-    required int number,
+    required NoteNumber number,
   }) = _Note;
 
   factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
+
+  static Note get c => const Note(number: 36);
+  static Note get d => const Note(number: 38);
+  static Note get e => const Note(number: 40);
+  static Note get f => const Note(number: 41);
+  static Note get g => const Note(number: 43);
+  static Note get a => const Note(number: 45);
+  static Note get b => const Note(number: 47);
 }
 
 extension NoteImpl on Note {
   String fullName([Accidental accidental = Accidental.sharp]) {
-    return '${name(accidental)}$octave';
+    return '${name(accidental)}$octaveNumber';
   }
 
   String name([Accidental accidental = Accidental.sharp]) {
-    return _notes[number % _semitonePerOctave]![accidental]!;
+    return _notes[number % Note.semitonePerOctave]![accidental]!;
   }
 
-  int get octave {
-    return (number ~/ _semitonePerOctave) - 1;
+  int get octaveNumber {
+    return (number ~/ Note.semitonePerOctave) - 1;
   }
 
   bool get isBlackKey {
-    return switch (number % _semitonePerOctave) {
+    return switch (number % Note.semitonePerOctave) {
       1 || 3 || 5 || 8 || 10 => true,
       _ => false,
     };
+  }
+
+  Note get sharp => Note(number: number + 1);
+
+  Note get flat => Note(number: number - 1);
+
+  Note shift({required int octave}) {
+    return Note(number: number + (Note.semitonePerOctave * octave));
   }
 }
 

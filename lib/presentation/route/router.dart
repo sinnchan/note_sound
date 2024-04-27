@@ -39,7 +39,7 @@ class TopRoute extends GoRouteData {
 class DebugTopRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const DebugTopPage();
+    return DebugTopPage();
   }
 }
 

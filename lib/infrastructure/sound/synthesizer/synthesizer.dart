@@ -3,11 +3,12 @@ import 'package:dart_melty_soundfont/dart_melty_soundfont.dart' as lib;
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/services.dart';
 import 'package:note_sound/domain/logger/logger.dart';
+import 'package:note_sound/domain/sound/keyboard.dart';
 import 'package:note_sound/domain/sound/note.dart';
+import 'package:note_sound/domain/sound/velocity.dart';
 import 'package:note_sound/gen/assets.gen.dart';
 import 'package:note_sound/infrastructure/sound/synthesizer/synthesizer_options.dart';
 import 'package:note_sound/infrastructure/sound/value/sound_fonts.dart';
-import 'package:note_sound/infrastructure/sound/value/velocity.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'synthesizer.g.dart';
@@ -28,7 +29,7 @@ Future<Synthesizer> synthesizer(SynthesizerRef ref) async {
   return synth;
 }
 
-class Synthesizer with ClassLogger {
+class Synthesizer with ClassLogger implements IKeyboard {
   lib.Synthesizer? _synthesizer;
   final SynthesizerOption option;
   final Set<NoteOnCallback> _callbacks = {};
@@ -62,6 +63,21 @@ class Synthesizer with ClassLogger {
     logger.d('dispose()');
     _synthesizer?.reset();
     _synthesizer = null;
+  }
+
+  @override
+  Future<void> push(
+    Set<Note> notes, [
+    Duration duration = const Duration(seconds: 1),
+    Velocity velocity = const Velocity(value: 127),
+  ]) async {
+    for (final i in notes) {
+      noteOn(i, velocity);
+    }
+    await Future.delayed(duration);
+    for (final i in notes) {
+      noteOff(i);
+    }
   }
 
   void noteOn(Note note, Velocity velocity, [int channel = 0]) {
