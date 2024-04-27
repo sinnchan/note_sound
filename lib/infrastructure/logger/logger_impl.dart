@@ -11,32 +11,32 @@ class CustomLogger implements ILogger {
   );
 
   @override
-  void v(Object message, {Object? error, StackTrace? stackTrace}) {
+  void v(Object? message, {Object? error, StackTrace? stackTrace}) {
     _logger.t(message, error: error, stackTrace: stackTrace);
   }
 
   @override
-  void d(Object message, {Object? error, StackTrace? stackTrace}) {
+  void d(Object? message, {Object? error, StackTrace? stackTrace}) {
     _logger.d(message, error: error, stackTrace: stackTrace);
   }
 
   @override
-  void i(Object message, {Object? error, StackTrace? stackTrace}) {
+  void i(Object? message, {Object? error, StackTrace? stackTrace}) {
     _logger.i(message, error: error, stackTrace: stackTrace);
   }
 
   @override
-  void w(Object message, {Object? error, StackTrace? stackTrace}) {
+  void w(Object? message, {Object? error, StackTrace? stackTrace}) {
     _logger.w(message, error: error, stackTrace: stackTrace);
   }
 
   @override
-  void e(Object message, {Object? error, StackTrace? stackTrace}) {
+  void e(Object? message, {Object? error, StackTrace? stackTrace}) {
     _logger.e(message, error: error, stackTrace: stackTrace);
   }
 
   @override
-  void f(Object message, {Object? error, StackTrace? stackTrace}) {
+  void f(Object? message, {Object? error, StackTrace? stackTrace}) {
     _logger.f(message, error: error, stackTrace: stackTrace);
   }
 }
@@ -57,7 +57,7 @@ class CustomPrinter extends PrettyPrinter {
     super.stackTraceBeginIndex = 2,
     super.methodCount = 0,
     super.errorMethodCount = 12,
-    super.lineLength = 2,
+    super.lineLength = 0,
     super.colors = false,
     super.printEmojis = false,
     super.printTime = false,
