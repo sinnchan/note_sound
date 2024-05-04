@@ -19,6 +19,13 @@ class Note with _$Note {
 
   factory Note.fromJson(Map<String, dynamic> json) => _$NoteFromJson(json);
 
+  static List<Note> all() {
+    return List.generate(
+      Note.max + 1,
+      (i) => Note(number: i),
+    );
+  }
+
   static Note get c => const Note(number: 36);
   static Note get d => const Note(number: 38);
   static Note get e => const Note(number: 40);

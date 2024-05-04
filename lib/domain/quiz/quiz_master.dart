@@ -1,10 +1,9 @@
 import 'dart:math';
 
 import 'package:dart_scope_functions/dart_scope_functions.dart';
-import 'package:note_sound/domain/logger/logger.dart';
-import 'package:note_sound/domain/providers.dart';
-import 'package:note_sound/domain/quiz/quiz_entry.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:note_sound/domain/logger/logger.dart';
+import 'package:note_sound/domain/quiz/quiz_entry.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/domain/util.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_master_repository.dart';
@@ -14,12 +13,6 @@ part 'quiz_master.freezed.dart';
 part 'quiz_master.g.dart';
 
 typedef QuizMasterStateId = int;
-
-abstract interface class IQuizMasterRepository {
-  Stream<QuizMasterState> stream({required QuizMasterStateId id});
-  Future<QuizMasterState?> load({required QuizMasterStateId id});
-  Future<void> save(QuizMasterState value);
-}
 
 @freezed
 class QuizMasterState with _$QuizMasterState {
@@ -44,10 +37,16 @@ class QuizMaster extends _$QuizMaster with ClassLogger {
     final repository = await ref.read(quizMasterRepositoryProvider.future);
     final state = (await repository.load(id: id)) ?? _newState(id);
 
+    final subscription = repository
+        .stream(id: id)
+        .map(AsyncData.new)
+        .listen((s) => this.state = s);
+
     ref.onDispose(() {
       if (this.state.hasValue) {
         this.state.valueOrNull?.let(repository.save);
       }
+      subscription.cancel();
     });
 
     logger.i(state.toJson());

@@ -60,6 +60,6 @@ class DebugPitchTraningRoute extends GoRouteData {
 class DebugSelectNotesRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const DebugSelectNotesPage();
+    return DebugSelectNotesPage();
   }
 }

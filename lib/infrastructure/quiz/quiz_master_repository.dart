@@ -5,8 +5,8 @@ import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/quiz/quiz_entry.dart';
 import 'package:note_sound/domain/quiz/quiz_master.dart';
 import 'package:note_sound/domain/sound/note.dart';
-import 'package:note_sound/infrastructure/quiz/db_quiz_master_satate.dart';
-import 'package:note_sound/infrastructure/repository.dart';
+import 'package:note_sound/infrastructure/quiz/value/db_quiz_master_satate.dart';
+import 'package:note_sound/infrastructure/util/extensions/provider_ext.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -16,27 +16,17 @@ part 'quiz_master_repository.g.dart';
 Future<QuizMasterRepository> quizMasterRepository(
   QuizMasterRepositoryRef ref,
 ) async {
-  final repository = QuizMasterRepository(null);
-
-  await repository.init();
-
-  return repository;
+  return QuizMasterRepository(await ref.isar);
 }
 
-class QuizMasterRepository extends Repository
-    with ClassLogger
-    implements IQuizMasterRepository {
-  QuizMasterRepository(super._isar);
+class QuizMasterRepository with ClassLogger {
+  final Isar isar;
 
-  @override
+  QuizMasterRepository(this.isar);
+
   Stream<QuizMasterState> stream({required QuizMasterStateId id}) {
-    final stateStream = isar.dbQuizMasterStates
-        .watchObject(id, fireImmediately: true)
-        .whereNotNull();
-    final entriesStream = isar.dbQuizEntrys
-        .where()
-        .parentIdEqualTo(id)
-        .watch(fireImmediately: true);
+    final stateStream = isar.dbQuizMasterStates.watchObject(id).whereNotNull();
+    final entriesStream = isar.dbQuizEntrys.where().parentIdEqualTo(id).watch();
 
     return CombineLatestStream.combine2(
       stateStream,
@@ -45,7 +35,6 @@ class QuizMasterRepository extends Repository
     );
   }
 
-  @override
   Future<QuizMasterState?> load({required QuizMasterStateId id}) async {
     final state = isar.dbQuizMasterStates.get(id);
     final entries = isar.dbQuizEntrys.where().parentIdEqualTo(id).findAll();
@@ -53,7 +42,6 @@ class QuizMasterRepository extends Repository
     return state?.let((it) => _decode(it, entries));
   }
 
-  @override
   Future<void> save(QuizMasterState value) async {
     final encoded = _encode(value);
 
