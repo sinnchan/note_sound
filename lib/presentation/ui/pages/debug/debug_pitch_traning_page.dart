@@ -1,16 +1,20 @@
+import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:note_sound/domain/logger/logger.dart';
+import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/presentation/route/router.dart';
 import 'package:note_sound/presentation/util/l10n_mixin.dart';
 import 'package:note_sound/presentation/ui/widgets/expandable/expandable_card.dart';
 
-class DebugPitchTraningPage extends HookWidget {
+class DebugPitchTraningPage extends HookConsumerWidget {
   const DebugPitchTraningPage({super.key});
 
   final padding = 20.0;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.l10n.pitch_traning),
@@ -20,49 +24,75 @@ class DebugPitchTraningPage extends HookWidget {
         child: ListView(
           padding: const EdgeInsets.all(8),
           children: [
-            ExpandableCard(
-              title: context.l10n.quiz_mode,
-              expanded: Column(
-                children: [
-                  nextPageButton(
-                    text: context.l10n.select_notes,
-                    onTap: () => DebugSelectNotesRoute().go(context),
-                  ),
-                  Divider(indent: padding),
-                  input(
-                    text: context.l10n.quiz_count,
-                    initValue: '',
-                    onChanged: (value) {},
-                  ),
-                  const Divider(),
-                  startButton(() {}),
-                ],
-              ),
-            ),
-            ExpandableCard(
-              title: context.l10n.listening_mode,
-              expanded: Column(
-                children: [
-                  nextPageButton(
-                    text: context.l10n.select_notes,
-                    onTap: () {},
-                  ),
-                  Divider(indent: padding),
-                  input(
-                    text: context.l10n.quiz_count,
-                    initValue: '',
-                    onChanged: (value) {},
-                  ),
-                  const Divider(),
-                  startButton(() {}),
-                ],
-              ),
-            ),
+            _pitchEarTraningCard(context, ref),
+            _pitchEarListeningCard(context),
           ],
         ),
       ),
     );
   }
+
+  ExpandableCard _pitchEarTraningCard(BuildContext context, WidgetRef ref) {
+    final repository = ref.watch(quizInfoRepositoryProvider).valueOrNull;
+    final quizNoteCount = useState(0);
+
+    useEffect(
+      () => repository?.quizNoteCountStream.listen((count) {
+        buildLogger('TEST').d('hoge: $count');
+        quizNoteCount.value = count;
+      }).cancel,
+      [repository],
+    );
+
+    return ExpandableCard(
+      title: context.l10n.quiz_mode,
+      expanded: Column(
+        children: [
+          nextPageButton(
+            text: context.l10n.select_notes,
+            onTap: () => DebugSelectNotesRoute().go(context),
+          ),
+          Divider(indent: padding),
+          input(
+            text: context.l10n.quiz_count,
+            initValue: quizNoteCount.value.toString(),
+            onChanged: (value) async {
+              final repo = await ref.read(quizInfoRepositoryProvider.future);
+              return int.tryParse(value)?.let((it) {
+                return repo.setQuizNoteCount(it);
+              });
+            },
+          ),
+          const Divider(),
+          startButton(() {}),
+        ],
+      ),
+    );
+  }
+
+  ExpandableCard _pitchEarListeningCard(BuildContext context) {
+    return ExpandableCard(
+      title: context.l10n.listening_mode,
+      expanded: Column(
+        children: [
+          nextPageButton(
+            text: context.l10n.select_notes,
+            onTap: () {},
+          ),
+          Divider(indent: padding),
+          input(
+            text: context.l10n.quiz_count,
+            initValue: '',
+            onChanged: (value) {},
+          ),
+          const Divider(),
+          startButton(() {}),
+        ],
+      ),
+    );
+  }
+
+  // components
 
   Widget input({
     required String text,
@@ -70,6 +100,13 @@ class DebugPitchTraningPage extends HookWidget {
     required void Function(String) onChanged,
   }) {
     final controller = useTextEditingController(text: initValue);
+    useEffect(
+      () {
+        controller.text = initValue;
+        return null;
+      },
+      [controller, initValue],
+    );
 
     return Padding(
       padding: EdgeInsets.symmetric(
@@ -88,9 +125,7 @@ class DebugPitchTraningPage extends HookWidget {
                 keyboardType: TextInputType.number,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
-                  contentPadding: EdgeInsets.symmetric(
-                    horizontal: 8,
-                  ),
+                  contentPadding: EdgeInsets.symmetric(horizontal: 8),
                 ),
                 onSubmitted: onChanged,
               ),

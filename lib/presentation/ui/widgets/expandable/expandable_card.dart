@@ -10,6 +10,7 @@ class ExpandableCard extends StatelessWidget {
     required this.expanded,
     this.animationDuration = const Duration(milliseconds: 300),
     this.radius = 8,
+    this.initialExpanded = true,
   });
 
   final String title;
@@ -17,6 +18,7 @@ class ExpandableCard extends StatelessWidget {
   final Widget expanded;
   final Duration animationDuration;
   final double radius;
+  final bool initialExpanded;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +33,7 @@ class ExpandableCard extends StatelessWidget {
           ),
         ),
         child: ExpandableNotifierBuilder(
+          initialExpanded: initialExpanded,
           builder: (context, controller) {
             return ScrollOnExpand(
               child: Card(
