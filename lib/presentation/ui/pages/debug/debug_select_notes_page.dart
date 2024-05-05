@@ -28,7 +28,10 @@ class DebugSelectNotesPage extends HookConsumerWidget with ClassLogger {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tabs = _getTabs();
-    final tabController = useTabController(initialLength: tabs.length);
+    final tabController = useTabController(
+      initialLength: tabs.length,
+      initialIndex: 4,
+    );
     final futureRepository = ref.watch(quizTargetRepositoryProvider.future);
 
     return Scaffold(
