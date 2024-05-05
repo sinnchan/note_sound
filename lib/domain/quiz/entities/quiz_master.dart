@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_sound/domain/logger/logger.dart';
-import 'package:note_sound/domain/quiz/quiz_entry.dart';
+import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/domain/util.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_master_repository.dart';
