@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_pitch_traning_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_select_notes_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_sound_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_top_page.dart';
+import 'package:note_sound/presentation/ui/pages/quiz/quiz_questions_page.dart';
 import 'package:note_sound/presentation/ui/pages/top_page.dart';
 
 part 'router.g.dart';
@@ -11,6 +13,9 @@ part 'router.g.dart';
 @TypedGoRoute<TopRoute>(
   path: '/',
   routes: [
+    TypedGoRoute<QuizNotesRoute>(
+      path: 'quiz/notes',
+    ),
     TypedGoRoute<DebugTopRoute>(
       path: 'debug',
       routes: [
@@ -26,13 +31,20 @@ part 'router.g.dart';
           ],
         ),
       ],
-    )
+    ),
   ],
 )
 class TopRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return const TopPage();
+  }
+}
+
+class QuizNotesRoute extends GoRouteData {
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return QuizQuestionsPage(type: QuizType.notes);
   }
 }
 

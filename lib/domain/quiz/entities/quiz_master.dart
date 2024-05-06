@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_sound/domain/logger/logger.dart';
-import 'package:note_sound/domain/providers.dart';
 import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/domain/util.dart';
@@ -39,6 +38,11 @@ class CurrentQuizQuestion with _$CurrentQuizQuestion {
 
   factory CurrentQuizQuestion.fromJson(Map<String, Object?> json) =>
       _$CurrentQuizQuestionFromJson(json);
+}
+
+enum QuizType {
+  notes,
+  chords,
 }
 
 @riverpod
@@ -79,7 +83,7 @@ class QuizMaster extends _$QuizMaster with ClassLogger {
       return;
     }
 
-    await _setNextQuestion(reset: true);
+    await nextQuestion(reset: true);
   }
 
   bool answer(QuizEntry answer) {
@@ -99,7 +103,8 @@ class QuizMaster extends _$QuizMaster with ClassLogger {
     final correct = q == answer;
     if (correct) {
       logger.i('correct!!');
-      _setNextQuestion();
+    } else {
+      logger.i('wrong..');
     }
 
     return correct;
@@ -107,12 +112,11 @@ class QuizMaster extends _$QuizMaster with ClassLogger {
 
   void skip() {
     logger.d('skip');
-    _setNextQuestion();
+    nextQuestion();
   }
 
-  Future<void> _setNextQuestion({bool reset = false}) async {
-    logger.v('_setNextQuestion');
-    final random = ref.read(randomProvider);
+  Future<void> nextQuestion({bool reset = false}) async {
+    logger.v('nextQuestion(reset: $reset)');
 
     state = state.selectMap(data: (d) {
       const choiceCount = 3;
@@ -121,7 +125,7 @@ class QuizMaster extends _$QuizMaster with ClassLogger {
       final nextQuestion = entries.removeLast();
       final wrongChoices = List.generate(
         choiceCount - 1,
-        (_) => entries[random.nextInt(entries.length)],
+        (_) => entries.removeLast(),
       ).toList();
 
       return AsyncData(
