@@ -5,7 +5,7 @@ import 'package:note_sound/infrastructure/quiz/value/db_quiz_target_note.dart';
 import 'package:note_sound/infrastructure/util/extensions/provider_ext.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'quiz_selected_repository.g.dart';
+part 'quiz_target_repository.g.dart';
 
 @riverpod
 Future<QuizTargetRepository> quizTargetRepository(
@@ -25,6 +25,14 @@ class QuizTargetRepository with ClassLogger {
     return isar.dbQuizTargetNotes
         .watchObject(number, fireImmediately: true)
         .map((target) => target != null);
+  }
+
+  Future<List<NoteNumber>> getAllTargetNotes() async {
+    return isar.dbQuizTargetNotes
+        .where()
+        .findAll()
+        .map((e) => e.number)
+        .toList();
   }
 
   Future<void> saveTargetAllNote(bool enable) async {

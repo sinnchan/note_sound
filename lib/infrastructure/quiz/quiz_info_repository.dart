@@ -36,4 +36,8 @@ class QuizInfoRepository with ClassLogger {
       _quizNoteCountStream.add(count);
     }
   }
+
+  Future<int> getQuizNoteCount() async {
+    return prefs.getInt(PrefsKeys.quizNoteCount.name) ?? 0;
+  }
 }

@@ -3,50 +3,57 @@ import 'dart:math';
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_sound/domain/logger/logger.dart';
+import 'package:note_sound/domain/providers.dart';
 import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/domain/util.dart';
+import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_master_repository.dart';
+import 'package:note_sound/infrastructure/quiz/quiz_target_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'quiz_master.freezed.dart';
 part 'quiz_master.g.dart';
 
-typedef QuizMasterStateId = int;
-
 @freezed
 class QuizMasterState with _$QuizMasterState {
   const factory QuizMasterState({
-    required QuizMasterStateId? id,
     required List<QuizEntry> entries,
-    int? quizIndex,
-    required bool isFinished,
+    required CurrentQuizQuestion? currentQuestion,
     required bool isLoop,
+    required int questionCount,
+    required int correctCount,
   }) = _QuizMasterState;
 
   factory QuizMasterState.fromJson(Map<String, Object?> json) =>
       _$QuizMasterStateFromJson(json);
 }
 
+@freezed
+class CurrentQuizQuestion with _$CurrentQuizQuestion {
+  const factory CurrentQuizQuestion({
+    required int count,
+    required QuizEntry question,
+    required List<QuizEntry> choices,
+  }) = _CurrentQuizQuestion;
+
+  factory CurrentQuizQuestion.fromJson(Map<String, Object?> json) =>
+      _$CurrentQuizQuestionFromJson(json);
+}
+
 @riverpod
 class QuizMaster extends _$QuizMaster with ClassLogger {
   @override
-  Future<QuizMasterState> build({QuizMasterStateId id = 1}) async {
-    logger.d('build(id: $id)');
+  Future<QuizMasterState> build() async {
+    logger.d('build()');
 
     final repository = await ref.read(quizMasterRepositoryProvider.future);
-    final state = (await repository.load(id: id)) ?? _newState(id);
-
-    final subscription = repository
-        .stream(id: id)
-        .map(AsyncData.new)
-        .listen((s) => this.state = s);
+    final state = (await repository.load()) ?? (await _newState());
 
     ref.onDispose(() {
       if (this.state.hasValue) {
         this.state.valueOrNull?.let(repository.save);
       }
-      subscription.cancel();
     });
 
     logger.i(state.toJson());
@@ -60,18 +67,9 @@ class QuizMaster extends _$QuizMaster with ClassLogger {
     super.state = newState;
   }
 
-  void setEntries(List<QuizEntry> entries) {
-    state = state.selectMap(
-      data: (d) => AsyncValue.data(
-        d.value.copyWith(
-          entries: entries,
-          quizIndex: null,
-        ),
-      ),
-    );
-  }
+  Future<void> start() async {
+    logger.d('start()');
 
-  void start() {
     final state = this.state.valueOrNull;
     if (state == null) {
       logger.w({
@@ -81,96 +79,94 @@ class QuizMaster extends _$QuizMaster with ClassLogger {
       return;
     }
 
-    if (state.entries.isEmpty) {
-      logger.i('entries is empty');
-      return;
-    }
-
-    this.state = AsyncData(state.copyWith(quizIndex: 0));
-  }
-
-  QuizEntry? getQuestion() {
-    final state = this.state.valueOrNull;
-    if (state == null) {
-      logger.w({
-        'message': 'illegal state',
-        'state': this.state.toJson((data) => data.toJson()),
-      });
-      return null;
-    }
-
-    final index = state.quizIndex;
-    if (state.entries.isEmpty ||
-        index == null ||
-        state.entries.length < index) {
-      logger.i({
-        'message': 'entry is empty, or not started, or finished.',
-        'state': state.toJson(),
-      });
-      return null;
-    }
-
-    final entry = state.entries[index];
-    logger.i({
-      'quiz_index': state.quizIndex,
-      'entry': entry,
-    });
-
-    return entry;
+    await _setNextQuestion(reset: true);
   }
 
   bool answer(QuizEntry answer) {
-    final q = getQuestion();
+    logger.d({
+      'answer()': {
+        'arg1': answer.toJson(),
+      },
+    });
+
+    final q = state.mapOrNull(data: (d) {
+      return d.valueOrNull?.currentQuestion?.question;
+    });
     if (q == null) {
       return false;
     }
 
     final correct = q == answer;
-
     if (correct) {
       logger.i('correct!!');
-      _nextQuestion();
+      _setNextQuestion();
     }
+
     return correct;
   }
 
   void skip() {
-    logger.i('skip');
-    _nextQuestion();
+    logger.d('skip');
+    _setNextQuestion();
   }
 
-  void _nextQuestion() {
+  Future<void> _setNextQuestion({bool reset = false}) async {
+    logger.v('_setNextQuestion');
+    final random = ref.read(randomProvider);
+
     state = state.selectMap(data: (d) {
+      const choiceCount = 3;
       final state = d.value;
-      final index = state.quizIndex;
-      final nextIndex = state.entries.isEmpty || index == null
-          ? null
-          : min(state.entries.length - 1, index + 1);
+      final entries = [...state.entries]..shuffle();
+      final nextQuestion = entries.removeLast();
+      final wrongChoices = List.generate(
+        choiceCount - 1,
+        (_) => entries[random.nextInt(entries.length)],
+      ).toList();
 
-      if (nextIndex == null) {
-        logger.i('no next index.');
-      }
-      if (index == nextIndex) {
-        logger.i('this is last question!');
-      }
-
-      return AsyncValue.data(
-        d.value.copyWith(quizIndex: nextIndex),
+      return AsyncData(
+        state.copyWith(
+          currentQuestion: CurrentQuizQuestion(
+            count: reset
+                ? 1
+                : state.currentQuestion?.count.let((it) => it + 1) ?? 1,
+            question: nextQuestion,
+            choices: [nextQuestion, ...wrongChoices]..shuffle(),
+          ),
+        ),
       );
     });
   }
 
-  void reset() {
-    logger.i('reset');
-    ref.invalidateSelf();
+  void clear() {
+    logger.i('clear');
+    state = state.selectMap(data: (d) {
+      return const AsyncData(
+        QuizMasterState(
+          entries: [],
+          currentQuestion: null,
+          isLoop: false,
+          questionCount: 0,
+          correctCount: 0,
+        ),
+      );
+    });
   }
 
-  QuizMasterState _newState(QuizMasterStateId id) {
+  Future<QuizMasterState> _newState() async {
+    final infoRepo = await ref.read(quizInfoRepositoryProvider.future);
+    final targetRepo = await ref.read(quizTargetRepositoryProvider.future);
+    final targets = await targetRepo.getAllTargetNotes();
+    final questionCount = await infoRepo.getQuizNoteCount();
+
     return QuizMasterState(
-      id: id,
-      entries: [],
-      quizIndex: 0,
-      isFinished: false,
+      entries: targets
+          .map((number) => Note(number: number))
+          .map((note) => QuizEntry.note(note))
+          .toList(),
+      currentQuestion: null,
+      questionCount: questionCount,
+      correctCount: 0,
       isLoop: false,
     );
   }

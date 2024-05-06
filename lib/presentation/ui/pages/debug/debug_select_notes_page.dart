@@ -5,7 +5,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/sound/note.dart';
-import 'package:note_sound/infrastructure/quiz/quiz_selected_repository.dart';
+import 'package:note_sound/infrastructure/quiz/quiz_target_repository.dart';
 import 'package:note_sound/presentation/util/l10n_mixin.dart';
 
 part 'debug_select_notes_page.freezed.dart';
