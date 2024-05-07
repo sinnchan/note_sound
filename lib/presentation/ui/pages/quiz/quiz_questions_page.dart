@@ -55,7 +55,27 @@ class QuizQuestionsPage extends HookConsumerWidget {
         children: [
           Flexible(
             flex: 5,
-            child: _sampleButton(context),
+            child: Stack(
+              children: [
+                _sampleButton(context),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  alignment: Alignment.centerRight,
+                  child: Column(
+                    children: [
+                      SizedBox.square(
+                        dimension: 48,
+                        child: Placeholder(),
+                      ),
+                      SizedBox.square(
+                        dimension: 48,
+                        child: Placeholder(),
+                      ),
+                    ].withSeparater(const SizedBox(height: 16)),
+                  ),
+                )
+              ],
+            ),
           ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 48),
@@ -106,8 +126,8 @@ class QuizQuestionsPage extends HookConsumerWidget {
             decoration: BoxDecoration(
               borderRadius: _borderRadius,
             ),
-            child: Center(
-              child: Text('TAP'),
+            child: const Center(
+              child: Icon(Icons.music_note),
             ),
           ),
         ),
@@ -153,7 +173,7 @@ class _ChoiceButton extends HookConsumerWidget {
       style: ElevatedButton.styleFrom(
         side: selected == entry
             ? BorderSide(color: context.theme.colorScheme.primary)
-            : null,
+            : BorderSide(color: Colors.transparent),
       ),
       child: Text(
         entry.when(
