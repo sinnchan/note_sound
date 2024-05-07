@@ -26,10 +26,14 @@ sealed class QuizEntry with _$QuizEntry {
 }
 
 extension QuizEntryImpl on QuizEntry {
-  List<int> toNoteNumbers() {
+  Set<Note> toNotes() {
     return when(
-      note: (note) => [note.number],
-      chord: (chord) => chord.notes.map((e) => e.number).toList(),
+      note: (note) => {note},
+      chord: (chord) => chord.notes,
     );
+  }
+
+  List<int> toNoteNumbers() {
+    return toNotes().map((e) => e.number).toList();
   }
 }

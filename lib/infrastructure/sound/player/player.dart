@@ -32,6 +32,7 @@ class SoundPlayer extends _$SoundPlayer with CLogger {
     final opt = option ?? const SoundPlayerOption();
     logger.v(opt.toJson());
 
+    FlutterPcmSound.setLogLevel(LogLevel.error);
     await FlutterPcmSound.setup(
       sampleRate: opt.sampleRate.value,
       channelCount: 1,
@@ -47,7 +48,6 @@ class SoundPlayer extends _$SoundPlayer with CLogger {
     synth.setNoteOnCallback(noteCallback);
 
     setFeedCallback((count) {
-      _providerLogger.v('feed callback: $count');
       feed(synth.render(opt.bufferSize.size));
     });
 
@@ -56,7 +56,9 @@ class SoundPlayer extends _$SoundPlayer with CLogger {
       dispose();
     });
 
-    return const SoundPlayerState();
+    await play();
+
+    return const SoundPlayerState(isPlaying: true);
   }
 
   Future<void> dispose() async {
@@ -91,7 +93,6 @@ class SoundPlayer extends _$SoundPlayer with CLogger {
   }
 
   Future<void> feed(ByteData data) {
-    logger.v('feed(bytes: ${data.lengthInBytes})');
     return FlutterPcmSound.feed(PcmArrayInt16(bytes: data));
   }
 

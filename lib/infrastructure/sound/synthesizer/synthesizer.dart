@@ -3,7 +3,6 @@ import 'package:dart_melty_soundfont/dart_melty_soundfont.dart' as lib;
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/services.dart';
 import 'package:note_sound/domain/logger/logger.dart';
-import 'package:note_sound/domain/sound/keyboard.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/domain/sound/velocity.dart';
 import 'package:note_sound/gen/assets.gen.dart';
@@ -29,7 +28,7 @@ Future<Synthesizer> synthesizer(SynthesizerRef ref) async {
   return synth;
 }
 
-class Synthesizer with CLogger implements IKeyboard {
+class Synthesizer with CLogger {
   lib.Synthesizer? _synthesizer;
   final SynthesizerOption option;
   final Set<NoteOnCallback> _callbacks = {};
@@ -65,21 +64,6 @@ class Synthesizer with CLogger implements IKeyboard {
     _synthesizer = null;
   }
 
-  @override
-  Future<void> push(
-    Set<Note> notes, [
-    Duration duration = const Duration(seconds: 1),
-    Velocity velocity = const Velocity(value: 127),
-  ]) async {
-    for (final i in notes) {
-      noteOn(i, velocity);
-    }
-    await Future.delayed(duration);
-    for (final i in notes) {
-      noteOff(i);
-    }
-  }
-
   void noteOn(Note note, Velocity velocity, [int channel = 0]) {
     logger.d('noteOn($note, $velocity, channel: $channel)');
     _synthesizer?.noteOn(
@@ -90,13 +74,27 @@ class Synthesizer with CLogger implements IKeyboard {
     _notifyListeners(note: note, on: true);
   }
 
+  void notesOn(Set<Note> notes, Velocity velocity, [int channel = 0]) {
+    logger.d('notesOn($notes, $velocity, channel: $channel)');
+    for (final note in notes) {
+      noteOn(note, velocity);
+    }
+  }
+
   void noteOff(Note note, [int channel = 0]) {
-    logger.d('noteOff()');
+    logger.d('noteOff(note: $note, channel: $channel)');
     _synthesizer?.noteOff(
       channel: channel,
       key: note.number,
     );
     _notifyListeners(note: note, on: false);
+  }
+
+  void notesOff(Set<Note> notes, [int channel = 0]) {
+    logger.d('notesOff(notes: $notes, channel: $channel)');
+    for (final note in notes) {
+      noteOff(note);
+    }
   }
 
   void noteOffAll([int channel = 0]) {
@@ -106,8 +104,6 @@ class Synthesizer with CLogger implements IKeyboard {
   }
 
   ByteData render([int? sampleCount]) {
-    logger.d('render(sampleCount: $sampleCount)');
-
     var buffer = _bufferPool.firstWhereOrNull((e) {
       return e.bytes.lengthInBytes == sampleCount;
     });

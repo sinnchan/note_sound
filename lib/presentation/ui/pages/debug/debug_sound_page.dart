@@ -62,7 +62,7 @@ class DebugSoundPlayerPage extends HookConsumerWidget with CLogger {
                   return synthKey(
                     ref,
                     Note(number: index),
-                    const sound.Velocity(value: 127),
+                    sound.Velocity.max(),
                   );
                 },
               ),

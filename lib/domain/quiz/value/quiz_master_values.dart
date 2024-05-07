@@ -52,4 +52,5 @@ extension QuizMasterStateExt on QuizMasterState {
 
 extension AnswerResultExt on AnswerResult {
   bool get isCorrect => this is _AnswerResultCorrect;
+  bool get isFinished => this is _AnswerResultFinished;
 }

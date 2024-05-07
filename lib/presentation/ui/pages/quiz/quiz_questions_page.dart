@@ -1,10 +1,14 @@
+import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:note_sound/domain/sound/velocity.dart' as sound;
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
 import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
 import 'package:note_sound/domain/sound/note.dart';
+import 'package:note_sound/infrastructure/sound/player/player.dart';
+import 'package:note_sound/infrastructure/sound/synthesizer/synthesizer.dart';
 import 'package:note_sound/presentation/util/context_extensions.dart';
 import 'package:note_sound/presentation/util/list_extensions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -61,7 +65,7 @@ class QuizQuestionsPage extends HookConsumerWidget {
             flex: 5,
             child: Stack(
               children: [
-                _sampleButton(context),
+                const _SampleButton(),
                 Container(
                   padding: const EdgeInsets.all(12),
                   alignment: Alignment.centerRight,
@@ -98,7 +102,8 @@ class QuizQuestionsPage extends HookConsumerWidget {
               child: ElevatedButton(
                 onPressed: choice != null
                     ? () async {
-                        if ((await master.answer(choice)).isCorrect) {
+                        final result = await master.answer(choice);
+                        if (result.isCorrect || result.isFinished) {
                           choiceNotifier.clear();
                         } else {}
                       }
@@ -112,28 +117,6 @@ class QuizQuestionsPage extends HookConsumerWidget {
             child: SizedBox.shrink(),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _sampleButton(BuildContext context) {
-    return Center(
-      child: SizedBox.square(
-        dimension: 128,
-        child: ElevatedButton(
-          onPressed: () {},
-          style: ElevatedButton.styleFrom(
-            side: BorderSide(color: context.theme.colorScheme.primary),
-          ),
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: _borderRadius,
-            ),
-            child: const Center(
-              child: Icon(Icons.music_note),
-            ),
-          ),
-        ),
       ),
     );
   }
@@ -156,6 +139,58 @@ class QuizQuestionsPage extends HookConsumerWidget {
           style: const TextStyle(fontSize: 16),
         )
       ],
+    );
+  }
+}
+
+class _SampleButton extends HookConsumerWidget {
+  const _SampleButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    const size = 128.0;
+    final borderRadius = BorderRadius.circular(size / 2);
+    final primaryColor = context.theme.colorScheme.primary;
+
+    ref.watch(soundPlayerProvider());
+    final master = ref.watch(quizMasterProvider).valueOrNull;
+
+    Future<void> notesOn() async {
+      final synth = await ref.read(synthesizerProvider.future);
+      master?.currentQuestion?.question.toNotes().let((notes) {
+        synth.notesOn(notes, sound.Velocity.max());
+      });
+    }
+
+    Future<void> notesOff() async {
+      final synth = await ref.read(synthesizerProvider.future);
+      master?.currentQuestion?.question.toNotes().let((notes) {
+        synth.notesOff(notes);
+      });
+    }
+
+    return Center(
+      child: SizedBox.square(
+        dimension: size,
+        child: Container(
+          decoration: BoxDecoration(
+            color: primaryColor.withOpacity(0.05),
+            borderRadius: borderRadius,
+            border: Border.all(color: primaryColor),
+          ),
+          child: InkWell(
+            borderRadius: borderRadius,
+            splashColor: primaryColor.withOpacity(0.3),
+            highlightColor: primaryColor.withOpacity(0.2),
+            onTapDown: (_) => notesOn(),
+            onTapUp: (_) => notesOff(),
+            onTapCancel: () => notesOff(),
+            child: const Center(
+              child: Icon(Icons.music_note),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
