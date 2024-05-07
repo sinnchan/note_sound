@@ -2,6 +2,7 @@ import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/presentation/route/router.dart';
 import 'package:note_sound/presentation/util/l10n_mixin.dart';
@@ -63,7 +64,10 @@ class DebugPitchTraningPage extends HookConsumerWidget {
           ),
           const Divider(),
           startButton(() async {
-            QuizNotesRoute().push(context);
+            await ref.read(quizMasterProvider.notifier).start();
+            if (context.mounted) {
+              QuizNotesRoute().go(context);
+            }
           }),
         ],
       ),

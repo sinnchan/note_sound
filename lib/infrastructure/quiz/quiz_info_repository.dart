@@ -19,7 +19,7 @@ class QuizInfoRepository with CLogger {
 
   QuizInfoRepository(this.prefs) {
     _quizNoteCountStream.add(
-      prefs.getInt(PrefsKeys.quizNoteCount.name) ?? 0,
+      prefs.getInt(PrefsKeys.quizNoteCount) ?? 0,
     );
   }
 
@@ -31,13 +31,13 @@ class QuizInfoRepository with CLogger {
   Future<void> setQuizNoteCount(int count) async {
     logger.d('setQuizNoteCount($count)');
 
-    final success = await prefs.setInt(PrefsKeys.quizNoteCount.name, count);
+    final success = await prefs.setInt(PrefsKeys.quizNoteCount, count);
     if (success) {
       _quizNoteCountStream.add(count);
     }
   }
 
   Future<int> getQuizNoteCount() async {
-    return prefs.getInt(PrefsKeys.quizNoteCount.name) ?? 0;
+    return prefs.getInt(PrefsKeys.quizNoteCount) ?? 0;
   }
 }

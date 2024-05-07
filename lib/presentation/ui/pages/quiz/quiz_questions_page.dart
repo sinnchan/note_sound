@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
 import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
+import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/presentation/util/context_extensions.dart';
 import 'package:note_sound/presentation/util/list_extensions.dart';
@@ -30,7 +31,10 @@ class QuizQuestionsPage extends HookConsumerWidget {
   final QuizType type;
   final _borderRadius = BorderRadius.circular(12);
 
-  QuizQuestionsPage({super.key, required this.type});
+  QuizQuestionsPage({
+    super.key,
+    required this.type,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -93,9 +97,8 @@ class QuizQuestionsPage extends HookConsumerWidget {
             child: Center(
               child: ElevatedButton(
                 onPressed: choice != null
-                    ? () {
-                        if (master.answer(choice)) {
-                          master.nextQuestion();
+                    ? () async {
+                        if ((await master.answer(choice)).isCorrect) {
                           choiceNotifier.clear();
                         } else {}
                       }

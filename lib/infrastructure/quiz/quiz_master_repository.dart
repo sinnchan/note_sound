@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:note_sound/domain/logger/logger.dart';
-import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
+import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
 import 'package:note_sound/infrastructure/shared_preference/shared_preference_keys.dart';
 import 'package:note_sound/infrastructure/util/extensions/provider_ext.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -22,7 +22,7 @@ class QuizMasterRepository with CLogger {
   QuizMasterRepository(this.prefs);
 
   Future<QuizMasterState?> load() async {
-    final json = prefs.getString(PrefsKeys.quizMasterState.name);
+    final json = prefs.getString(PrefsKeys.quizMasterState);
 
     if (json == null) {
       return null;
@@ -38,8 +38,12 @@ class QuizMasterRepository with CLogger {
 
   Future<void> save(QuizMasterState state) {
     return prefs.setString(
-      PrefsKeys.quizMasterState.name,
+      PrefsKeys.quizMasterState,
       jsonEncode(state.toJson()),
     );
+  }
+
+  Future<void> clear() {
+    return prefs.remove(PrefsKeys.quizMasterState);
   }
 }
