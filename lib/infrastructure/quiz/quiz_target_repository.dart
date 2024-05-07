@@ -14,7 +14,7 @@ Future<QuizTargetRepository> quizTargetRepository(
   return QuizTargetRepository(await ref.isar);
 }
 
-class QuizTargetRepository with ClassLogger {
+class QuizTargetRepository with CLogger {
   final Isar isar;
 
   QuizTargetRepository(this.isar);

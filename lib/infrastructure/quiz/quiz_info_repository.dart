@@ -12,7 +12,7 @@ Future<QuizInfoRepository> quizInfoRepository(QuizInfoRepositoryRef ref) async {
   return QuizInfoRepository(await ref.prefs);
 }
 
-class QuizInfoRepository with ClassLogger {
+class QuizInfoRepository with CLogger {
   final SharedPreferences prefs;
 
   final _quizNoteCountStream = BehaviorSubject<int>();

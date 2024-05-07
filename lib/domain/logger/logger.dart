@@ -2,7 +2,7 @@
 import 'package:note_sound/domain/logger/i_logger.dart';
 import 'package:note_sound/infrastructure/logger/logger_impl.dart';
 
-mixin ClassLogger {
+mixin CLogger {
   late final ILogger logger = CustomLogger('$runtimeType');
 }
 

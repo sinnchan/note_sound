@@ -29,7 +29,7 @@ Future<Synthesizer> synthesizer(SynthesizerRef ref) async {
   return synth;
 }
 
-class Synthesizer with ClassLogger implements IKeyboard {
+class Synthesizer with CLogger implements IKeyboard {
   lib.Synthesizer? _synthesizer;
   final SynthesizerOption option;
   final Set<NoteOnCallback> _callbacks = {};

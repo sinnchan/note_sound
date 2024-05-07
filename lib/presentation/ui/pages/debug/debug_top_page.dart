@@ -5,7 +5,7 @@ import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/presentation/route/router.dart';
 import 'package:note_sound/presentation/util/l10n_mixin.dart';
 
-class DebugTopPage extends HookConsumerWidget with ClassLogger {
+class DebugTopPage extends HookConsumerWidget with CLogger {
   DebugTopPage({super.key});
 
   @override

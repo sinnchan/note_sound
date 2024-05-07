@@ -22,7 +22,7 @@ class DebugSelectNotesTab with _$DebugSelectNotesTab {
       _$DebugSelectNotesTabFromJson(json);
 }
 
-class DebugSelectNotesPage extends HookConsumerWidget with ClassLogger {
+class DebugSelectNotesPage extends HookConsumerWidget with CLogger {
   DebugSelectNotesPage({super.key});
 
   @override
@@ -108,7 +108,7 @@ class DebugSelectNotesPage extends HookConsumerWidget with ClassLogger {
   }
 }
 
-class _ListItem extends HookConsumerWidget with ClassLogger {
+class _ListItem extends HookConsumerWidget with CLogger {
   final Note note;
 
   _ListItem(this.note);

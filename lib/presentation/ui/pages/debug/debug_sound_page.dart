@@ -7,7 +7,7 @@ import 'package:note_sound/infrastructure/sound/synthesizer/synthesizer.dart';
 import 'package:note_sound/domain/sound/velocity.dart' as sound;
 import 'package:note_sound/presentation/util/l10n_mixin.dart';
 
-class DebugSoundPlayerPage extends HookConsumerWidget with ClassLogger {
+class DebugSoundPlayerPage extends HookConsumerWidget with CLogger {
   DebugSoundPlayerPage({super.key});
 
   @override

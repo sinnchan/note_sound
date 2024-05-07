@@ -24,7 +24,7 @@ class SoundPlayerState with _$SoundPlayerState {
 }
 
 @riverpod
-class SoundPlayer extends _$SoundPlayer with ClassLogger {
+class SoundPlayer extends _$SoundPlayer with CLogger {
   @override
   Future<SoundPlayerState> build({SoundPlayerOption? option}) async {
     logger.d('build()');

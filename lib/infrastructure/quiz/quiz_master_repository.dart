@@ -16,7 +16,7 @@ Future<QuizMasterRepository> quizMasterRepository(
   return QuizMasterRepository(await ref.prefs);
 }
 
-class QuizMasterRepository with ClassLogger {
+class QuizMasterRepository with CLogger {
   final SharedPreferences prefs;
 
   QuizMasterRepository(this.prefs);

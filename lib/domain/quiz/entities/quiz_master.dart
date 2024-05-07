@@ -46,7 +46,7 @@ enum QuizType {
 }
 
 @riverpod
-class QuizMaster extends _$QuizMaster with ClassLogger {
+class QuizMaster extends _$QuizMaster with CLogger {
   @override
   Future<QuizMasterState> build() async {
     logger.d('build()');
