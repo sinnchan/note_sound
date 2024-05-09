@@ -11,8 +11,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'player.freezed.dart';
 part 'player.g.dart';
 
-final _providerLogger = buildLogger('SoundPlayerProvider');
-
 @freezed
 class SoundPlayerState with _$SoundPlayerState {
   const factory SoundPlayerState({

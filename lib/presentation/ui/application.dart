@@ -21,7 +21,7 @@ class Application extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final seedColor = Colors.green;
+    const seedColor = Colors.green;
     return MaterialApp.router(
       title: 'Note Sound',
       theme: ThemeData(

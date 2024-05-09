@@ -41,3 +41,29 @@ class QuizInfoRepository with CLogger {
     return prefs.getInt(PrefsKeys.quizNoteCount) ?? 0;
   }
 }
+
+@riverpod
+class EnableChoiceSound extends _$EnableChoiceSound with CLogger {
+  final defaultValue = false;
+
+  @override
+  bool build() {
+    load();
+    return defaultValue;
+  }
+
+  Future<void> save({required bool enable}) async {
+    logger.d('set(enable: $enable)');
+
+    final prefs = await ref.prefs;
+    await prefs.setBool(PrefsKeys.enableChoiceSound, enable);
+    await load();
+  }
+
+  Future<bool> load() async {
+    final prefs = await ref.prefs;
+    final value = prefs.getBool(PrefsKeys.enableChoiceSound) ?? defaultValue;
+    state = value;
+    return value;
+  }
+}

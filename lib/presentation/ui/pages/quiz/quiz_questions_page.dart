@@ -1,5 +1,6 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/sound/velocity.dart' as sound;
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -7,6 +8,7 @@ import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
 import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
 import 'package:note_sound/domain/sound/note.dart';
+import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/infrastructure/sound/player/player.dart';
 import 'package:note_sound/infrastructure/sound/synthesizer/synthesizer.dart';
 import 'package:note_sound/presentation/util/context_extensions.dart';
@@ -31,9 +33,8 @@ class _Choice extends _$Choice {
   }
 }
 
-class QuizQuestionsPage extends HookConsumerWidget {
+class QuizQuestionsPage extends HookConsumerWidget with CLogger {
   final QuizType type;
-  final _borderRadius = BorderRadius.circular(12);
 
   QuizQuestionsPage({
     super.key,
@@ -71,13 +72,13 @@ class QuizQuestionsPage extends HookConsumerWidget {
                   alignment: Alignment.centerRight,
                   child: Column(
                     children: [
-                      SizedBox.square(
-                        dimension: 48,
-                        child: Placeholder(),
-                      ),
-                      SizedBox.square(
-                        dimension: 48,
-                        child: Placeholder(),
+                      AnimatedCrossFade(
+                        firstChild: _enableChoiceButton(ref),
+                        secondChild: _disableChoiceButton(ref),
+                        crossFadeState: ref.watch(enableChoiceSoundProvider)
+                            ? CrossFadeState.showFirst
+                            : CrossFadeState.showSecond,
+                        duration: const Duration(milliseconds: 100),
                       ),
                     ].withSeparater(const SizedBox(height: 16)),
                   ),
@@ -108,7 +109,7 @@ class QuizQuestionsPage extends HookConsumerWidget {
                         } else {}
                       }
                     : null,
-                child: Text('決定'),
+                child: const Text('決定'),
               ),
             ),
           ),
@@ -117,6 +118,30 @@ class QuizQuestionsPage extends HookConsumerWidget {
             child: SizedBox.shrink(),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _disableChoiceButton(WidgetRef ref) {
+    return SizedBox.square(
+      dimension: 48,
+      child: IconButton.outlined(
+        onPressed: () {
+          ref.read(enableChoiceSoundProvider.notifier).save(enable: true);
+        },
+        icon: const Icon(Icons.volume_off),
+      ),
+    );
+  }
+
+  Widget _enableChoiceButton(WidgetRef ref) {
+    return SizedBox.square(
+      dimension: 48,
+      child: IconButton.filled(
+        onPressed: () {
+          ref.read(enableChoiceSoundProvider.notifier).save(enable: false);
+        },
+        icon: const Icon(Icons.volume_up),
       ),
     );
   }
@@ -211,7 +236,7 @@ class _ChoiceButton extends HookConsumerWidget {
       style: ElevatedButton.styleFrom(
         side: selected == entry
             ? BorderSide(color: context.theme.colorScheme.primary)
-            : BorderSide(color: Colors.transparent),
+            : null,
       ),
       child: Text(
         entry.when(
