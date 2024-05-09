@@ -1,4 +1,5 @@
 import 'package:note_sound/domain/logger/logger.dart';
+import 'package:note_sound/infrastructure/shared_preference/shared_preference.dart';
 import 'package:note_sound/infrastructure/shared_preference/shared_preference_keys.dart';
 import 'package:note_sound/infrastructure/util/extensions/provider_ext.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -42,27 +43,27 @@ class QuizInfoRepository with CLogger {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 class EnableChoiceSound extends _$EnableChoiceSound with CLogger {
-  final defaultValue = false;
+  final _defaultValue = false;
 
   @override
   bool build() {
     load();
-    return defaultValue;
+    return _defaultValue;
   }
 
   Future<void> save({required bool enable}) async {
     logger.d('set(enable: $enable)');
 
-    final prefs = await ref.prefs;
+    final prefs = await ref.read(prefsProvider.future);
     await prefs.setBool(PrefsKeys.enableChoiceSound, enable);
     await load();
   }
 
   Future<bool> load() async {
-    final prefs = await ref.prefs;
-    final value = prefs.getBool(PrefsKeys.enableChoiceSound) ?? defaultValue;
+    final prefs = await ref.read(prefsProvider.future);
+    final value = prefs.getBool(PrefsKeys.enableChoiceSound) ?? _defaultValue;
     state = value;
     return value;
   }

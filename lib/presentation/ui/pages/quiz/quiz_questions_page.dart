@@ -11,7 +11,7 @@ import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/infrastructure/sound/player/player.dart';
 import 'package:note_sound/infrastructure/sound/synthesizer/synthesizer.dart';
-import 'package:note_sound/presentation/util/context_extensions.dart';
+import 'package:note_sound/presentation/ui/widgets/buttons.dart';
 import 'package:note_sound/presentation/util/list_extensions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -174,8 +174,6 @@ class _SampleButton extends HookConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     const size = 128.0;
-    final borderRadius = BorderRadius.circular(size / 2);
-    final primaryColor = context.theme.colorScheme.primary;
 
     ref.watch(soundPlayerProvider());
     final master = ref.watch(quizMasterProvider).valueOrNull;
@@ -197,22 +195,13 @@ class _SampleButton extends HookConsumerWidget {
     return Center(
       child: SizedBox.square(
         dimension: size,
-        child: Container(
-          decoration: BoxDecoration(
-            color: primaryColor.withOpacity(0.05),
-            borderRadius: borderRadius,
-            border: Border.all(color: primaryColor),
-          ),
-          child: InkWell(
-            borderRadius: borderRadius,
-            splashColor: primaryColor.withOpacity(0.3),
-            highlightColor: primaryColor.withOpacity(0.2),
-            onTapDown: (_) => notesOn(),
-            onTapUp: (_) => notesOff(),
-            onTapCancel: () => notesOff(),
-            child: const Center(
-              child: Icon(Icons.music_note),
-            ),
+        child: BorderButton(
+          borderRadius: BorderRadius.circular(size / 2),
+          onTapDown: (_) => notesOn(),
+          onTapUp: (_) => notesOff(),
+          onTapCancel: () => notesOff(),
+          child: const Center(
+            child: Icon(Icons.music_note),
           ),
         ),
       ),
@@ -229,15 +218,28 @@ class _ChoiceButton extends HookConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final selected = ref.watch(_choiceProvider);
 
-    return ElevatedButton(
-      onPressed: () {
+    return BorderButton(
+      enableBorder: selected == entry,
+      onTapUp: (_) async {
         ref.read(_choiceProvider.notifier).choice(entry);
+
+        if (ref.read(enableChoiceSoundProvider)) {
+          final synth = await ref.read(synthesizerProvider.future);
+          synth.notesOff(entry.toNotes());
+        }
       },
-      style: ElevatedButton.styleFrom(
-        side: selected == entry
-            ? BorderSide(color: context.theme.colorScheme.primary)
-            : null,
-      ),
+      onTapDown: (_) async {
+        if (ref.read(enableChoiceSoundProvider)) {
+          final synth = await ref.read(synthesizerProvider.future);
+          synth.notesOn(entry.toNotes(), sound.Velocity.max());
+        }
+      },
+      onTapCancel: () async {
+        if (ref.read(enableChoiceSoundProvider)) {
+          final synth = await ref.read(synthesizerProvider.future);
+          synth.notesOff(entry.toNotes());
+        }
+      },
       child: Text(
         entry.when(
           note: (note) => note.name(),
