@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:note_sound/domain/logger/logger.dart';
+import 'package:note_sound/domain/providers.dart';
 import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
 import 'package:note_sound/domain/sound/note.dart';
@@ -9,6 +10,7 @@ import 'package:note_sound/domain/util.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_master_repository.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_target_repository.dart';
+import 'package:note_sound/presentation/providers/correct_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'quiz_master.g.dart';
@@ -63,8 +65,15 @@ class QuizMaster extends _$QuizMaster with CLogger {
     }
 
     final correct = q == answer;
+    final random = ref.read(randomProvider);
+    ref.read(correctProvider.notifier).state = (
+      correct: correct,
+      hash: random.nextInt(1 << 32),
+    );
+
     if (correct) {
       logger.i('correct!!');
+
       if (state.isFinished) {
         return const AnswerResult.finished();
       } else {

@@ -240,10 +240,12 @@ class _ChoiceButton extends HookConsumerWidget {
           synth.notesOff(entry.toNotes());
         }
       },
-      child: Text(
-        entry.when(
-          note: (note) => note.name(),
-          chord: (chord) => chord.toString(),
+      child: Center(
+        child: Text(
+          entry.when(
+            note: (note) => note.name(),
+            chord: (chord) => chord.toString(),
+          ),
         ),
       ),
     );

@@ -12,8 +12,18 @@ import 'package:note_sound/presentation/ui/pages/debug/debug_top_page.dart';
 import 'package:note_sound/presentation/ui/pages/quiz/quiz_questions_page.dart';
 import 'package:note_sound/presentation/ui/pages/top_page.dart';
 import 'package:note_sound/presentation/util/context_extensions.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'router.g.dart';
+
+@Riverpod(keepAlive: true)
+GoRouter goRouter(GoRouterRef ref) {
+  return GoRouter(
+    routes: $appRoutes,
+    initialLocation: '/',
+    debugLogDiagnostics: true,
+  );
+}
 
 @TypedGoRoute<TopRoute>(
   path: '/',

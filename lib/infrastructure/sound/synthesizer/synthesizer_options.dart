@@ -7,13 +7,15 @@ import 'package:note_sound/infrastructure/sound/value/sound_fonts.dart';
 part 'synthesizer_options.freezed.dart';
 part 'synthesizer_options.g.dart';
 
+const defaultBufferSize = BufferSize(size: 512);
+
 @freezed
 class SynthesizerOption with _$SynthesizerOption {
   const factory SynthesizerOption({
     required SoundFonts sf,
     @Default(SampleRate()) SampleRate sampleRate,
     @Default(BlockSize()) BlockSize blockSize,
-    @Default(BufferSize(size: 2048)) BufferSize bufferSize,
+    @Default(defaultBufferSize) BufferSize bufferSize,
   }) = _SynthesizerOption;
 
   factory SynthesizerOption.fromJson(Map<String, Object?> json) =>

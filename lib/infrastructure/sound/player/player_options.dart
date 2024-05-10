@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:note_sound/infrastructure/sound/synthesizer/synthesizer_options.dart';
 import 'package:note_sound/infrastructure/sound/value/buffer_size.dart';
 import 'package:note_sound/infrastructure/sound/value/sample_rate.dart';
 
@@ -9,7 +10,7 @@ part 'player_options.g.dart';
 class SoundPlayerOption with _$SoundPlayerOption {
   const factory SoundPlayerOption({
     @Default(SampleRate()) SampleRate sampleRate,
-    @Default(BufferSize(size: 2048)) BufferSize bufferSize,
+    @Default(defaultBufferSize) BufferSize bufferSize,
   }) = _SoundPlayerOption;
 
   factory SoundPlayerOption.fromJson(Map<String, Object?> json) =>
