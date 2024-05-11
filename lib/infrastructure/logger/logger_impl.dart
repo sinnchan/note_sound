@@ -73,12 +73,13 @@ class CustomPrinter extends PrettyPrinter {
     final message = super.log(event);
     final colors = PrettyPrinter.defaultLevelColors[event.level]!;
     final emoji = _emojis[event.level]!;
+    final time = DateTime.now().toUtc().toIso8601String();
 
     if (message.length == 3) {
-      return [colors('[$emoji][$name]${message[1].substring(1)}')];
+      return [colors('[$emoji][$time][$name]${message[1].substring(1)}')];
     } else {
       return [
-        '${message[0]}[$name]',
+        '${message[0]}[$time][$name]',
         ...message.skip(1),
       ].map((e) => colors('[$emoji] $e')).toList();
     }
