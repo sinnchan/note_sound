@@ -66,10 +66,10 @@ class QuizMaster extends _$QuizMaster with CLogger {
 
     final correct = q == answer;
     final random = ref.read(randomProvider);
-    ref.read(correctProvider.notifier).state = (
+    ref.read(correctProvider.notifier).set((
       correct: correct,
       hash: random.nextInt(1 << 32),
-    );
+    ));
 
     if (correct) {
       logger.i('correct!!');
