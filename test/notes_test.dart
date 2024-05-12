@@ -47,5 +47,38 @@ void main() {
     test('shift', () {
       expect(Note.c.shift(octave: 1), const Note(number: 72));
     });
+
+    test('fromName', () {
+      expect(Note.fromName('C'), Note.c);
+      expect(Note.fromName('C♯'), Note.c.sharp);
+      expect(Note.fromName('C♭'), Note.c.flat);
+
+      expect(Note.fromName('C', 3), Note.c.shift(octave: -1));
+      expect(Note.fromName('C♯', 3), Note.c.sharp.shift(octave: -1));
+      expect(Note.fromName('C♭', 3), Note.c.flat.shift(octave: -1));
+
+      expect(Note.fromName('C', -1), const Note(number: 0));
+
+      expect(Note.fromName('C6'), null);
+
+      expect(Note.fromName('C6'), null);
+      expect(Note.fromName('C7(13)'), null);
+      expect(Note.fromName('C7(9)'), null);
+      expect(Note.fromName('C7-5'), null);
+      expect(Note.fromName('C7'), null);
+      expect(Note.fromName('C7sus4'), null);
+      expect(Note.fromName('CM7'), null);
+      expect(Note.fromName('CM'), null);
+      expect(Note.fromName('Cadd9'), null);
+      expect(Note.fromName('Caug'), null);
+      expect(Note.fromName('Cdim'), null);
+      expect(Note.fromName('Cm6'), null);
+      expect(Note.fromName('Cm7(9)'), null);
+      expect(Note.fromName('Cm7-5'), null);
+      expect(Note.fromName('Cm7'), null);
+      expect(Note.fromName('Cm'), null);
+      expect(Note.fromName('CmM7'), null);
+      expect(Note.fromName('Csus4'), null);
+    });
   });
 }

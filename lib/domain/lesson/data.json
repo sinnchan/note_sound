@@ -1,0 +1,229 @@
+{
+  "version": "1.0.0",
+  "updatedAt": "2024-05-11T16:42:47+00:00",
+  "quiz": {
+    "note": [
+      {
+        "title": "Lesson 1",
+        "description": "2つの音程を聞き分けよう",
+        "lessons": [
+          {
+            "title": "{C:4}, {D:4}",
+            "questions": 12,
+            "entries": [
+              "C:4",
+              "D:4"
+            ]
+          },
+          {
+            "title": "{C:4}, {E:4}",
+            "questions": 12,
+            "entries": [
+              "C:4",
+              "E:4"
+            ]
+          },
+          {
+            "title": "{C:4}, {F:4}",
+            "questions": 12,
+            "entries": [
+              "C:4",
+              "F:4"
+            ]
+          },
+          {
+            "title": "{C:4}, {G:4}",
+            "questions": 12,
+            "entries": [
+              "C:4",
+              "G:4"
+            ]
+          },
+          {
+            "title": "{C:4}, {A:4}",
+            "questions": 12,
+            "entries": [
+              "C:4",
+              "A:4"
+            ]
+          },
+          {
+            "title": "{C:4}, {B:4}",
+            "questions": 12,
+            "entries": [
+              "C:4",
+              "B:4"
+            ]
+          },
+          {
+            "title": "{D:4}, {E:4}",
+            "questions": 12,
+            "entries": [
+              "D:4",
+              "E:4"
+            ]
+          },
+          {
+            "title": "{D:4}, {F:4}",
+            "questions": 12,
+            "entries": [
+              "D:4",
+              "F:4"
+            ]
+          },
+          {
+            "title": "{D:4}, {G:4}",
+            "questions": 12,
+            "entries": [
+              "D:4",
+              "G:4"
+            ]
+          },
+          {
+            "title": "{D:4}, {A:4}",
+            "questions": 12,
+            "entries": [
+              "D:4",
+              "A:4"
+            ]
+          },
+          {
+            "title": "{D:4}, {B:4}",
+            "questions": 12,
+            "entries": [
+              "D:4",
+              "B:4"
+            ]
+          },
+          {
+            "title": "{E:4}, {F:4}",
+            "questions": 12,
+            "entries": [
+              "E:4",
+              "F:4"
+            ]
+          },
+          {
+            "title": "{E:4}, {G:4}",
+            "questions": 12,
+            "entries": [
+              "E:4",
+              "G:4"
+            ]
+          },
+          {
+            "title": "{E:4}, {A:4}",
+            "questions": 12,
+            "entries": [
+              "E:4",
+              "A:4"
+            ]
+          },
+          {
+            "title": "{E:4}, {B:4}",
+            "questions": 12,
+            "entries": [
+              "E:4",
+              "B:4"
+            ]
+          },
+          {
+            "title": "{F:4}, {G:4}",
+            "questions": 12,
+            "entries": [
+              "F:4",
+              "G:4"
+            ]
+          },
+          {
+            "title": "{F:4}, {A:4}",
+            "questions": 12,
+            "entries": [
+              "F:4",
+              "A:4"
+            ]
+          },
+          {
+            "title": "{F:4}, {B:4}",
+            "questions": 12,
+            "entries": [
+              "F:4",
+              "B:4"
+            ]
+          },
+          {
+            "title": "{G:4}, {A:4}",
+            "questions": 12,
+            "entries": [
+              "G:4",
+              "A:4"
+            ]
+          },
+          {
+            "title": "{G:4}, {B:4}",
+            "questions": 12,
+            "entries": [
+              "G:4",
+              "B:4"
+            ]
+          },
+          {
+            "title": "{A:4}, {B:4}",
+            "questions": 12,
+            "entries": [
+              "A:4",
+              "B:4"
+            ]
+          },
+          {
+            "title": "確認テスト",
+            "description": "{C:4} ~ {B:4} から2つの音をランダムに出題します。",
+            "choices": 2,
+            "entries": [
+              "C:4",
+              "E:4",
+              "D:4",
+              "F:4",
+              "G:4",
+              "A:4",
+              "B:4"
+            ]
+          }
+        ]
+      }
+    ],
+    "chord": [
+      {
+        "title": "C",
+        "description": "コードを聞き分けよう",
+        "lessons": [
+          {
+            "title": "ぜんぶ",
+            "questions": 24,
+            "choices": 3,
+            "entries": [
+              "C6:4",
+              "C7(13):4",
+              "C7(9):4",
+              "C7-5:4",
+              "C7:4",
+              "C7sus4:4",
+              "CM7:4",
+              "CM:4",
+              "Cadd9:4",
+              "Caug:4",
+              "Cdim:4",
+              "Cm6:4",
+              "Cm7(9):4",
+              "Cm7-5:4",
+              "Cm7:4",
+              "Cm:4",
+              "CmM7:4",
+              "Csus4:4"
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -6,11 +6,14 @@ part 'note.g.dart';
 
 typedef NoteNumber = int;
 
+const sharp = '♯';
+const flat = '♭';
+
 @freezed
 class Note with _$Note {
   static const NoteNumber max = 127;
   static const NoteNumber min = 0;
-  static const NoteNumber semitonePerOctave = 12;
+  static const NoteNumber octaveCount = 12;
 
   @Assert('Note.min <= number && number <= Note.max')
   const factory Note({
@@ -33,6 +36,48 @@ class Note with _$Note {
   static Note get g => const Note(number: 67);
   static Note get a => const Note(number: 69);
   static Note get b => const Note(number: 71);
+
+  static Note? fromName(String name, [int octave = 4]) {
+    try {
+      final String strNote;
+      final String? strAcc;
+
+      switch (name.runes.length) {
+        case 1:
+          strNote = name.substring(0, 1);
+          strAcc = null;
+        case 2:
+          strNote = name.substring(0, 1);
+          strAcc = name.substring(1, 2);
+        default:
+          return null;
+      }
+
+      var note = switch (strNote) {
+        'C' => Note.c,
+        'D' => Note.d,
+        'E' => Note.e,
+        'F' => Note.f,
+        'G' => Note.g,
+        'A' => Note.a,
+        'B' => Note.b,
+        _ => throw "Invalid arg: $name",
+      };
+
+      note = note.shift(octave: octave - note.octaveNumber);
+
+      note = switch (strAcc) {
+        null => note,
+        sharp => note.sharp,
+        flat => note.flat,
+        _ => throw "Invalid arg: $name",
+      };
+
+      return note;
+    } catch (_) {
+      return null;
+    }
+  }
 }
 
 extension NoteImpl on Note {
@@ -41,15 +86,15 @@ extension NoteImpl on Note {
   }
 
   String name([Accidental accidental = Accidental.sharp]) {
-    return _notes[number % Note.semitonePerOctave]![accidental]!;
+    return _notes[number % Note.octaveCount]![accidental]!;
   }
 
   int get octaveNumber {
-    return (number ~/ Note.semitonePerOctave) - 1;
+    return (number ~/ Note.octaveCount) - 1;
   }
 
   bool get isBlackKey {
-    return switch (number % Note.semitonePerOctave) {
+    return switch (number % Note.octaveCount) {
       1 || 3 || 5 || 8 || 10 => true,
       _ => false,
     };
@@ -60,7 +105,7 @@ extension NoteImpl on Note {
   Note get flat => Note(number: number - 1);
 
   Note shift({required int octave}) {
-    return Note(number: number + (Note.semitonePerOctave * octave));
+    return Note(number: number + (Note.octaveCount * octave));
   }
 }
 
@@ -70,7 +115,7 @@ final _notes = {
     Accidental.flat: 'C',
   },
   1: {
-    Accidental.sharp: 'C♯',
+    Accidental.sharp: 'C$sharp',
     Accidental.flat: 'D♭',
   },
   2: {
@@ -78,7 +123,7 @@ final _notes = {
     Accidental.flat: 'D',
   },
   3: {
-    Accidental.sharp: 'D♯',
+    Accidental.sharp: 'D$sharp',
     Accidental.flat: 'E♭',
   },
   4: {
@@ -90,7 +135,7 @@ final _notes = {
     Accidental.flat: 'F',
   },
   6: {
-    Accidental.sharp: 'F♯',
+    Accidental.sharp: 'F$sharp',
     Accidental.flat: 'G♭',
   },
   7: {
@@ -98,7 +143,7 @@ final _notes = {
     Accidental.flat: 'G',
   },
   8: {
-    Accidental.sharp: 'G♯',
+    Accidental.sharp: 'G$sharp',
     Accidental.flat: 'A♭',
   },
   9: {
@@ -106,7 +151,7 @@ final _notes = {
     Accidental.flat: 'A',
   },
   10: {
-    Accidental.sharp: 'A♯',
+    Accidental.sharp: 'A$sharp',
     Accidental.flat: 'B♭',
   },
   11: {

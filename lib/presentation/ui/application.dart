@@ -107,7 +107,7 @@ class Application extends HookConsumerWidget with CLogger {
       () {
         listener(AnimationStatus status) {
           if (status == AnimationStatus.completed) {
-            ref.read(correctProvider.notifier).state = null;
+            ref.read(correctProvider.notifier).clear();
           }
         }
 

@@ -1,6 +1,4 @@
-import 'package:collection/collection.dart';
 import 'package:dart_melty_soundfont/dart_melty_soundfont.dart' as lib;
-import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/services.dart';
 import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/sound/note.dart';
@@ -32,7 +30,6 @@ class Synthesizer with CLogger {
   lib.Synthesizer? _synthesizer;
   final SynthesizerOption option;
   final Set<NoteOnCallback> _callbacks = {};
-  final _bufferPool = <lib.ArrayInt16>{};
 
   Synthesizer(this.option);
 
@@ -104,13 +101,9 @@ class Synthesizer with CLogger {
   }
 
   ByteData render([int? sampleCount]) {
-    var buffer = _bufferPool.firstWhereOrNull((e) {
-      return e.bytes.lengthInBytes == sampleCount;
-    });
-
-    buffer ??= lib.ArrayInt16.zeros(
+    final buffer = lib.ArrayInt16.zeros(
       numShorts: sampleCount ?? option.bufferSize.size,
-    ).also(_bufferPool.add);
+    );
 
     _synthesizer?.renderMonoInt16(buffer);
 
