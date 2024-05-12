@@ -18,9 +18,13 @@ void main() {
 
     test('octave', () {
       expect(
-          () => Note(number: -1).octaveNumber, throwsA(isA<AssertionError>()));
+        () => Note(number: -1).octaveNumber,
+        throwsA(isA<AssertionError>()),
+      );
       expect(
-          () => Note(number: 128).octaveNumber, throwsA(isA<AssertionError>()));
+        () => Note(number: 128).octaveNumber,
+        throwsA(isA<AssertionError>()),
+      );
       expect(const Note(number: 0).octaveNumber, -1);
       expect(const Note(number: 11).octaveNumber, -1);
       expect(const Note(number: 12).octaveNumber, 0);
@@ -29,19 +33,19 @@ void main() {
     });
 
     test('sharp', () {
-      expect(Note.c.sharp.number, 37);
+      expect(Note.c.sharp.number, 61);
       expect(Note.c.sharp.name(), 'C♯');
       expect(Note.c.sharp.sharp, Note.d);
     });
 
     test('flat', () {
-      expect(Note.c.flat.number, 35);
+      expect(Note.c.flat.number, 59);
       expect(Note.c.flat.name(), 'B');
       expect(Note.c.flat.flat, Note.a.sharp.shift(octave: -1));
     });
 
     test('shift', () {
-      expect(Note.c.shift(octave: 1), const Note(number: 48));
+      expect(Note.c.shift(octave: 1), const Note(number: 72));
     });
   });
 }

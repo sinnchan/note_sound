@@ -26,13 +26,13 @@ class Note with _$Note {
     );
   }
 
-  static Note get c => const Note(number: 36);
-  static Note get d => const Note(number: 38);
-  static Note get e => const Note(number: 40);
-  static Note get f => const Note(number: 41);
-  static Note get g => const Note(number: 43);
-  static Note get a => const Note(number: 45);
-  static Note get b => const Note(number: 47);
+  static Note get c => const Note(number: 60);
+  static Note get d => const Note(number: 62);
+  static Note get e => const Note(number: 64);
+  static Note get f => const Note(number: 65);
+  static Note get g => const Note(number: 67);
+  static Note get a => const Note(number: 69);
+  static Note get b => const Note(number: 71);
 }
 
 extension NoteImpl on Note {

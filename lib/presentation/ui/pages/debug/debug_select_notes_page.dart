@@ -30,7 +30,7 @@ class DebugSelectNotesPage extends HookConsumerWidget with CLogger {
     final tabs = _getTabs();
     final tabController = useTabController(
       initialLength: tabs.length,
-      initialIndex: 4,
+      initialIndex: 5,
     );
     final futureRepository = ref.watch(quizTargetRepositoryProvider.future);
 
@@ -99,7 +99,7 @@ class DebugSelectNotesPage extends HookConsumerWidget with CLogger {
 
     final tabs = noteMap.entries.map((e) {
       return DebugSelectNotesTab(
-        tabName: (e.key - 2).toString(),
+        tabName: (e.key - 1).toString(),
         notes: e.value.map((e) => Note(number: e)).toList(),
       );
     }).toList();
