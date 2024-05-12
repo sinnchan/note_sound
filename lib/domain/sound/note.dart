@@ -86,12 +86,12 @@ final _notes = {
     Accidental.flat: 'E',
   },
   5: {
-    Accidental.sharp: 'E♯',
-    Accidental.flat: 'F♭',
-  },
-  6: {
     Accidental.sharp: 'F',
     Accidental.flat: 'F',
+  },
+  6: {
+    Accidental.sharp: 'F♯',
+    Accidental.flat: 'G♭',
   },
   7: {
     Accidental.sharp: 'G',

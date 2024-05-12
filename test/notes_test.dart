@@ -12,6 +12,8 @@ void main() {
       expect(const Note(number: 1).fullName(), 'C♯-1');
       expect(const Note(number: 1).fullName(Accidental.flat), 'D♭-1');
       expect(const Note(number: 127).fullName(), 'G9');
+      expect(const Note(number: 65).fullName(), 'F4');
+      expect(const Note(number: 66).fullName(), 'F♯4');
     });
 
     test('octave', () {
