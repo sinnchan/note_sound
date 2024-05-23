@@ -64,12 +64,14 @@ class Note with _$Note {
         _ => throw "Invalid arg: $name",
       };
 
-      note = note.shift(octave: octave - note.octaveNumber);
+      note = note.shiftOctave(octave - note.octaveNumber);
 
       note = switch (strAcc) {
         null => note,
         sharp => note.sharp,
+        '#' => note.sharp,
         flat => note.flat,
+        'b' => note.flat,
         _ => throw "Invalid arg: $name",
       };
 
@@ -100,12 +102,16 @@ extension NoteImpl on Note {
     };
   }
 
-  Note get sharp => Note(number: number + 1);
+  Note get sharp => shift(1);
 
-  Note get flat => Note(number: number - 1);
+  Note get flat => shift(-1);
 
-  Note shift({required int octave}) {
-    return Note(number: number + (Note.octaveCount * octave));
+  Note shift(int count) {
+    return Note(number: number + count);
+  }
+
+  Note shiftOctave(int octave) {
+    return shift(Note.octaveCount * octave);
   }
 }
 

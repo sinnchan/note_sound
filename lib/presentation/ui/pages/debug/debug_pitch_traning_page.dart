@@ -66,7 +66,7 @@ class DebugPitchTraningPage extends HookConsumerWidget {
           startButton(() async {
             await ref.read(quizMasterProvider.notifier).start();
             if (context.mounted) {
-              QuizNotesRoute().go(context);
+              NoteRoute().go(context);
             }
           }),
         ],

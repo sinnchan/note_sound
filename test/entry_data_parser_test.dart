@@ -15,7 +15,7 @@ void main() {
     expect(parser.parse('A:4'), QuizEntry.note(Note.a));
     expect(parser.parse('B:4'), QuizEntry.note(Note.b));
 
-    expect(parser.parse('C:-1'), QuizEntry.note(Note.c.shift(octave: -5)));
-    expect(parser.parse('G:9'), QuizEntry.note(Note.g.shift(octave: 5)));
+    expect(parser.parse('C:-1'), QuizEntry.note(Note.c.shiftOctave(-5)));
+    expect(parser.parse('G:9'), QuizEntry.note(Note.g.shiftOctave(5)));
   });
 }

@@ -28,8 +28,13 @@ GoRouter goRouter(GoRouterRef ref) {
 @TypedGoRoute<TopRoute>(
   path: '/',
   routes: [
-    TypedGoRoute<QuizNotesRoute>(
-      path: 'quiz/notes',
+    TypedGoRoute<NoteRoute>(
+      path: 'notes',
+      routes: [
+        TypedGoRoute<NoteLessonRoute>(
+          path: 'lesson/:number',
+        ),
+      ],
     ),
     TypedGoRoute<DebugTopRoute>(
       path: 'debug',
@@ -56,7 +61,32 @@ class TopRoute extends GoRouteData {
   }
 }
 
-class QuizNotesRoute extends GoRouteData with CLogger {
+class NoteRoute extends GoRouteData with CLogger {
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) async {
+    final masterState = await context.read(quizMasterProvider.future);
+
+    if (masterState.entries.isEmpty) {
+      // TODO: 正しいpathに修正
+      final location = DebugPitchTraningRoute().location;
+      logger.i('redirect to $location');
+      return location;
+    }
+
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return QuizQuestionsPage(type: QuizType.notes);
+  }
+}
+
+class NoteLessonRoute extends GoRouteData with CLogger {
+  final int number;
+
+  NoteLessonRoute(this.number);
+
   @override
   FutureOr<String?> redirect(BuildContext context, GoRouterState state) async {
     final masterState = await context.read(quizMasterProvider.future);
