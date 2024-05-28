@@ -48,7 +48,7 @@ class QuizPage extends HookConsumerWidget with CLogger {
             flex: 5,
             child: Stack(
               children: [
-                const _SampleButton(),
+                const _SoundButton(),
                 Container(
                   padding: const EdgeInsets.all(12),
                   alignment: Alignment.centerRight,
@@ -150,8 +150,8 @@ class QuizPage extends HookConsumerWidget with CLogger {
   }
 }
 
-class _SampleButton extends HookConsumerWidget {
-  const _SampleButton();
+class _SoundButton extends HookConsumerWidget {
+  const _SoundButton();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
