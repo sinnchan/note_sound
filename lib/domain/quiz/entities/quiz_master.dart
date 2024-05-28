@@ -10,7 +10,7 @@ import 'package:note_sound/domain/util.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_master_repository.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_target_repository.dart';
-import 'package:note_sound/presentation/providers/correct_provider.dart';
+import 'package:note_sound/presentation/ui/pages/quiz/correct_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'quiz_master.g.dart';
@@ -59,7 +59,7 @@ class QuizMaster extends _$QuizMaster with CLogger {
     });
 
     final state = await future;
-    final q = state.currentQuestion?.question;
+    final q = state.currentQuiz?.entry;
     if (q == null) {
       return const AnswerResult.noQuestion();
     }
@@ -93,7 +93,7 @@ class QuizMaster extends _$QuizMaster with CLogger {
       const choiceCount = 3;
       final state = await future;
 
-      if (state.questionCount == state.currentQuestion?.count) {
+      if (state.quizCount == state.currentQuiz?.count) {
         logger.i('quiz finished');
         return state;
       }
@@ -106,10 +106,9 @@ class QuizMaster extends _$QuizMaster with CLogger {
       ).toList();
 
       return state.copyWith(
-        currentQuestion: CurrentQuizQuestion(
-          count:
-              first ? 1 : state.currentQuestion?.count.let((it) => it + 1) ?? 1,
-          question: nextQuestion,
+        currentQuiz: CurrentQuiz(
+          count: first ? 1 : state.currentQuiz?.count.let((it) => it + 1) ?? 1,
+          entry: nextQuestion,
           choices: [nextQuestion, ...wrongChoices]..shuffle(),
         ),
       );
@@ -135,8 +134,8 @@ class QuizMaster extends _$QuizMaster with CLogger {
           .map((number) => Note(number: number))
           .map((note) => QuizEntry.note(note))
           .toList(),
-      currentQuestion: null,
-      questionCount: questionCount,
+      currentQuiz: null,
+      quizCount: questionCount,
       correctCount: 0,
       isLoop: false,
     );

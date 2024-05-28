@@ -9,7 +9,7 @@ import 'package:note_sound/presentation/ui/pages/debug/debug_pitch_traning_page.
 import 'package:note_sound/presentation/ui/pages/debug/debug_select_notes_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_sound_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_top_page.dart';
-import 'package:note_sound/presentation/ui/pages/quiz/quiz_questions_page.dart';
+import 'package:note_sound/presentation/ui/pages/quiz/page.dart';
 import 'package:note_sound/presentation/ui/pages/top_page.dart';
 import 'package:note_sound/presentation/util/context_extensions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -78,7 +78,7 @@ class NoteRoute extends GoRouteData with CLogger {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return QuizQuestionsPage(type: QuizType.notes);
+    return QuizPage(type: QuizType.notes);
   }
 }
 
@@ -103,7 +103,7 @@ class NoteLessonRoute extends GoRouteData with CLogger {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return QuizQuestionsPage(type: QuizType.notes);
+    return QuizPage(type: QuizType.notes);
   }
 }
 

@@ -8,9 +8,9 @@ part 'quiz_master_values.g.dart';
 class QuizMasterState with _$QuizMasterState {
   const factory QuizMasterState({
     required List<QuizEntry> entries,
-    required CurrentQuizQuestion? currentQuestion,
+    required CurrentQuiz? currentQuiz,
     required bool isLoop,
-    required int questionCount,
+    required int quizCount,
     required int correctCount,
   }) = _QuizMasterState;
 
@@ -19,15 +19,15 @@ class QuizMasterState with _$QuizMasterState {
 }
 
 @freezed
-class CurrentQuizQuestion with _$CurrentQuizQuestion {
-  const factory CurrentQuizQuestion({
+class CurrentQuiz with _$CurrentQuiz {
+  const factory CurrentQuiz({
     required int count,
-    required QuizEntry question,
+    required QuizEntry entry,
     required List<QuizEntry> choices,
-  }) = _CurrentQuizQuestion;
+  }) = _CurrentQuiz;
 
-  factory CurrentQuizQuestion.fromJson(Map<String, Object?> json) =>
-      _$CurrentQuizQuestionFromJson(json);
+  factory CurrentQuiz.fromJson(Map<String, Object?> json) =>
+      _$CurrentQuizFromJson(json);
 }
 
 @freezed
@@ -47,7 +47,7 @@ enum QuizType {
 }
 
 extension QuizMasterStateExt on QuizMasterState {
-  bool get isFinished => questionCount == currentQuestion?.count;
+  bool get isFinished => quizCount == currentQuiz?.count;
 }
 
 extension AnswerResultExt on AnswerResult {
