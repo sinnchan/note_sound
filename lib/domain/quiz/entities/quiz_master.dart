@@ -9,7 +9,6 @@ import 'package:note_sound/domain/quiz/value/quiz_entry_target.dart';
 import 'package:note_sound/domain/quiz/value/quiz_master_state.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/domain/util.dart';
-import 'package:note_sound/domain/util/json/formatter.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_master_state_repository.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_target_repository.dart';
@@ -85,20 +84,20 @@ class QuizMaster extends _$QuizMaster with CLogger {
       logger.i('wrong..');
     }
 
-    if (state.quizIndex == state.entries.length - 1) {
-      return const AnswerResult.finished();
-    }
-
     // update correct
     final copiedEntries = [...state.entries];
     copiedEntries[state.quizIndex] = q.copyWith(correct: correct);
 
     this.state = AsyncValue.data(
       state.copyWith(
-        quizIndex: state.quizIndex + 1,
+        quizIndex: min(state.quizIndex + 1, state.entries.length - 1),
         entries: copiedEntries,
       ),
     );
+
+    if (state.quizIndex == state.entries.length - 1) {
+      return const AnswerResult.finished();
+    }
 
     ref.read(choiceProvider.notifier).clear();
 

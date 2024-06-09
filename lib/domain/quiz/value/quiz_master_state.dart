@@ -30,4 +30,8 @@ extension QuizMasterStateExt on QuizMasterState {
       return null;
     }
   }
+
+  bool get isAllCorrect {
+    return entries.where((e) => e.correct == true).length == entries.length;
+  }
 }

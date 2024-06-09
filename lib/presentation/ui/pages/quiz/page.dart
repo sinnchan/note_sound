@@ -2,7 +2,6 @@ import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/quiz/value/answer_result.dart';
-import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 import 'package:note_sound/domain/sound/velocity.dart' as sound;
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';

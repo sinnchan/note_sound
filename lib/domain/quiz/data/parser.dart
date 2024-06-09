@@ -20,7 +20,7 @@ class EntryDataPaser with CLogger {
         return QuizEntryTarget.note(note);
       }
 
-      // TODO
+      // TODO: parser実装する
       throw 1;
     } catch (e, st) {
       logger.w('failed to parse: $entry', e, st);
