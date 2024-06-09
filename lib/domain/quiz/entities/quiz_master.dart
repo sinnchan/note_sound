@@ -113,11 +113,11 @@ class QuizMaster extends _$QuizMaster with CLogger {
   }
 
   Future<QuizMasterState> _genNewState() async {
-    const quizWrongChoiceCount = 3;
     final uuid = ref.read(uuidGeneratorProvider);
     final rand = ref.read(randomProvider);
     final infoRepo = await ref.read(quizInfoRepositoryProvider.future);
     final targetRepo = await ref.read(quizTargetRepositoryProvider.future);
+    final quizWrongChoiceCount = (await infoRepo.getChoiceCount()) - 1;
     final quizCount = await infoRepo.getQuizCount();
     final targets = await targetRepo.getAllTargetNotes().then((notes) {
       return notes.map(QuizEntryTarget.note).toList();
