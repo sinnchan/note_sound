@@ -27,11 +27,11 @@ class QuizTargetRepository with CLogger {
         .map((target) => target != null);
   }
 
-  Future<List<NoteNumber>> getAllTargetNotes() async {
+  Future<List<Note>> getAllTargetNotes() async {
     return isar.dbQuizTargetNotes
         .where()
         .findAll()
-        .map((e) => e.number)
+        .map((e) => Note(number: e.number))
         .toList();
   }
 

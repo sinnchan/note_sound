@@ -3,13 +3,17 @@ import 'dart:math';
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/providers.dart';
+import 'package:note_sound/domain/quiz/value/answer_result.dart';
+import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 import 'package:note_sound/domain/quiz/value/quiz_entry_target.dart';
-import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
+import 'package:note_sound/domain/quiz/value/quiz_master_state.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/domain/util.dart';
+import 'package:note_sound/domain/util/json/formatter.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
-import 'package:note_sound/infrastructure/quiz/quiz_master_repository.dart';
+import 'package:note_sound/infrastructure/quiz/quiz_master_state_repository.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_target_repository.dart';
+import 'package:note_sound/infrastructure/util/uuid/generator.dart';
 import 'package:note_sound/presentation/ui/pages/quiz/choice_provider.dart';
 import 'package:note_sound/presentation/ui/pages/quiz/correct_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -22,8 +26,8 @@ class QuizMaster extends _$QuizMaster with CLogger {
   Future<QuizMasterState> build() async {
     logger.d('build()');
 
-    final stateRepo = await ref.read(quizMasterRepositoryProvider.future);
-    final state = (await stateRepo.load()) ?? (await _newState());
+    final stateRepo = await ref.read(quizMasterStateRepositoryProvider.future);
+    final state = (await stateRepo.load()) ?? (await _genNewState());
 
     ref.onDispose(() {
       if (this.state.hasValue) {
@@ -49,7 +53,10 @@ class QuizMaster extends _$QuizMaster with CLogger {
       await reset();
     }
 
-    await nextQuestion(first: true);
+    final state = await future;
+    this.state = AsyncData(
+      state.copyWith(quizIndex: 0),
+    );
   }
 
   Future<AnswerResult> answer(QuizEntryTarget answer) async {
@@ -59,13 +66,13 @@ class QuizMaster extends _$QuizMaster with CLogger {
       },
     });
 
-    final state = await future;
-    final q = state.currentQuiz?.entry;
+    var state = await future;
+    final q = state.currentQuiz;
     if (q == null) {
       return const AnswerResult.noQuestion();
     }
 
-    final correct = q == answer;
+    final correct = q.target == answer;
     final random = ref.read(randomProvider);
     ref.read(correctProvider.notifier).set((
       correct: correct,
@@ -74,78 +81,69 @@ class QuizMaster extends _$QuizMaster with CLogger {
 
     if (correct) {
       logger.i('correct!!');
-      this.state = AsyncValue.data(
-        state.copyWith(correctCount: state.correctCount + 1),
-      );
     } else {
       logger.i('wrong..');
     }
 
-    if (state.quizCount == state.currentQuiz?.count) {
-      this.state = AsyncValue.data(
-        state.copyWith(currentQuiz: null),
-      );
+    if (state.quizIndex == state.entries.length - 1) {
       return const AnswerResult.finished();
     }
 
-    await nextQuestion();
+    // update correct
+    final copiedEntries = [...state.entries];
+    copiedEntries[state.quizIndex] = q.copyWith(correct: correct);
+
+    this.state = AsyncValue.data(
+      state.copyWith(
+        quizIndex: state.quizIndex + 1,
+        entries: copiedEntries,
+      ),
+    );
+
     ref.read(choiceProvider.notifier).clear();
 
     return correct ? const AnswerResult.correct() : const AnswerResult.wrong();
-  }
-
-  Future<void> nextQuestion({bool first = false}) async {
-    logger.v('nextQuestion(first: $first)');
-
-    state = await AsyncValue.guard(() async {
-      const choiceCount = 3;
-      final state = await future;
-
-      if (state.quizCount == state.currentQuiz?.count) {
-        logger.i('quiz finished');
-        return state;
-      }
-
-      final entries = [...state.entries]..shuffle();
-      final nextQuestion = entries.removeLast();
-      final wrongChoices = List.generate(
-        choiceCount - 1,
-        (_) => entries.removeLast(),
-      ).toList();
-
-      return state.copyWith(
-        currentQuiz: CurrentQuiz(
-          count: first ? 1 : state.currentQuiz?.count.let((it) => it + 1) ?? 1,
-          entry: nextQuestion,
-          choices: [nextQuestion, ...wrongChoices]..shuffle(),
-        ),
-      );
-    });
   }
 
   Future<void> reset() async {
     logger.i('reset');
 
     state = await AsyncValue.guard(() async {
-      return _newState();
+      return _genNewState();
     });
   }
 
-  Future<QuizMasterState> _newState() async {
+  Future<QuizMasterState> _genNewState() async {
+    const quizWrongChoiceCount = 3;
+    final uuid = ref.read(uuidGeneratorProvider);
+    final rand = ref.read(randomProvider);
     final infoRepo = await ref.read(quizInfoRepositoryProvider.future);
     final targetRepo = await ref.read(quizTargetRepositoryProvider.future);
-    final targets = await targetRepo.getAllTargetNotes();
-    final questionCount = await infoRepo.getQuizNoteCount();
+    final quizCount = await infoRepo.getQuizCount();
+    final targets = await targetRepo.getAllTargetNotes().then((notes) {
+      return notes.map(QuizEntryTarget.note).toList();
+    });
 
     return QuizMasterState(
-      entries: targets
-          .map((number) => Note(number: number))
-          .map((note) => QuizEntryTarget.note(note))
-          .toList(),
-      currentQuiz: null,
-      quizCount: questionCount,
-      correctCount: 0,
-      isLoop: false,
+      id: uuid.v4(),
+      quizIndex: 0,
+      entries: List.generate(quizCount, (index) {
+        final targetIndex = rand.nextInt(targets.length);
+        final target = targets[targetIndex];
+
+        final wrongChoices = targets
+            .where((t) => t != target)
+            .toList()
+            .also((it) => it.shuffle())
+            .take(quizWrongChoiceCount);
+        final choices = [target, ...wrongChoices]..shuffle();
+
+        return QuizEntry(
+          id: uuid.v4(),
+          target: target,
+          choices: choices,
+        );
+      }),
     );
   }
 

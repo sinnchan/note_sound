@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
-import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
+import 'package:note_sound/domain/quiz/value/quiz_master_state.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_pitch_traning_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_select_notes_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_sound_page.dart';
@@ -116,19 +116,6 @@ class NoteQuizResultRoute extends GoRouteData with CLogger {
   final int number;
 
   NoteQuizResultRoute(this.number);
-
-  @override
-  FutureOr<String?> redirect(BuildContext context, GoRouterState state) async {
-    final masterState = await context.read(quizMasterProvider.future);
-    if (masterState.currentQuiz != null) {
-      // TODO: 正しいpathに修正
-      final location = DebugPitchTraningRoute().location;
-      logger.i('redirect to $location');
-      return location;
-    }
-
-    return null;
-  }
 
   @override
   Widget build(BuildContext context, GoRouterState state) {

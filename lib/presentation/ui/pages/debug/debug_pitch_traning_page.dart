@@ -34,11 +34,11 @@ class DebugPitchTraningPage extends HookConsumerWidget {
 
   ExpandableCard _pitchEarTraningCard(BuildContext context, WidgetRef ref) {
     final repository = ref.watch(quizInfoRepositoryProvider).valueOrNull;
-    final quizNoteCount = useState(0);
+    final quizCount = useState(0);
 
     useEffect(
-      () => repository?.quizNoteCountStream.listen((count) {
-        quizNoteCount.value = count;
+      () => repository?.quizCountStream.listen((count) {
+        quizCount.value = count;
       }).cancel,
       [repository],
     );
@@ -54,11 +54,11 @@ class DebugPitchTraningPage extends HookConsumerWidget {
           Divider(indent: padding),
           input(
             text: context.l10n.quiz_count,
-            initValue: quizNoteCount.value.toString(),
+            initValue: quizCount.value.toString(),
             onChanged: (value) async {
               final repo = await ref.read(quizInfoRepositoryProvider.future);
               return int.tryParse(value)?.let((it) {
-                return repo.setQuizNoteCount(it);
+                return repo.setQuizCount(it);
               });
             },
           ),

@@ -1,12 +1,14 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:note_sound/domain/logger/logger.dart';
+import 'package:note_sound/domain/quiz/value/answer_result.dart';
+import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 import 'package:note_sound/domain/sound/velocity.dart' as sound;
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
 import 'package:note_sound/domain/quiz/value/quiz_entry_target.dart';
-import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
+import 'package:note_sound/domain/quiz/value/quiz_master_state.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/infrastructure/sound/player/player.dart';
@@ -15,6 +17,11 @@ import 'package:note_sound/presentation/route/router.dart';
 import 'package:note_sound/presentation/ui/pages/quiz/choice_provider.dart';
 import 'package:note_sound/presentation/ui/widgets/buttons.dart';
 import 'package:note_sound/presentation/util/list_extensions.dart';
+
+enum QuizType {
+  notes,
+  chords,
+}
 
 class QuizPage extends HookConsumerWidget with CLogger {
   final QuizType type;
@@ -70,10 +77,12 @@ class QuizPage extends HookConsumerWidget with CLogger {
             padding: const EdgeInsets.symmetric(horizontal: 48),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: state?.currentQuiz?.choices
-                      .map((e) => _ChoiceButton(e))
-                      .toList()
-                      .withSeparater(const SizedBox(height: 16)) ??
+              children: state?.currentQuiz?.let((currentState) {
+                    return currentState.choices
+                        .map((e) => _ChoiceButton(e))
+                        .toList()
+                        .withSeparater(const SizedBox(height: 16));
+                  }) ??
                   [],
             ),
           ),
@@ -141,19 +150,19 @@ class QuizPage extends HookConsumerWidget with CLogger {
 
   Widget? _progress(QuizMasterState? state) {
     final current = state?.currentQuiz;
-    if (state == null || current == null || state.quizCount <= 0) {
+    if (state == null || current == null || state.entries.isEmpty) {
       return null;
     }
     return Row(
       children: [
         Expanded(
           child: LinearProgressIndicator(
-            value: current.count / state.quizCount,
+            value: state.quizIndex / state.entries.length,
           ),
         ),
         const SizedBox(width: 12),
         Text(
-          '${current.count} / ${state.quizCount}',
+          '${state.quizIndex} / ${state.entries.length}',
           style: const TextStyle(fontSize: 16),
         )
       ],
@@ -173,14 +182,14 @@ class _SoundButton extends HookConsumerWidget {
 
     Future<void> notesOn() async {
       final synth = await ref.read(synthesizerProvider.future);
-      master?.currentQuiz?.entry.toNotes().let((notes) {
+      master?.currentQuiz?.target.toNotes().let((notes) {
         synth.notesOn(notes, sound.Velocity.max());
       });
     }
 
     Future<void> notesOff() async {
       final synth = await ref.read(synthesizerProvider.future);
-      master?.currentQuiz?.entry.toNotes().let((notes) {
+      master?.currentQuiz?.target.toNotes().let((notes) {
         synth.notesOff(notes);
       });
     }

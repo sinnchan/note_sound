@@ -23,7 +23,7 @@ class EntryDataPaser with CLogger {
       // TODO
       throw 1;
     } catch (e, st) {
-      logger.w('failed to parse: $entry', error: e, stackTrace: st);
+      logger.w('failed to parse: $entry', e, st);
       return null;
     }
   }
