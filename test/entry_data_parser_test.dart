@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:note_sound/domain/lesson/parser.dart';
+import 'package:note_sound/domain/quiz/data/parser.dart';
 import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 import 'package:note_sound/domain/sound/note.dart';
 

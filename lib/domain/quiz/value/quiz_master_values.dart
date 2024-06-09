@@ -32,10 +32,10 @@ class CurrentQuiz with _$CurrentQuiz {
 
 @freezed
 class AnswerResult with _$AnswerResult {
-  const factory AnswerResult.correct() = _AnswerResultCorrect;
-  const factory AnswerResult.wrong() = _AnswerResultWrong;
-  const factory AnswerResult.finished() = _AnswerResultFinished;
-  const factory AnswerResult.noQuestion() = _AnswerResultNoQuestion;
+  const factory AnswerResult.correct() = AnswerResultCorrect;
+  const factory AnswerResult.wrong() = AnswerResultWrong;
+  const factory AnswerResult.finished() = AnswerResultFinished;
+  const factory AnswerResult.noQuestion() = AnswerResultNoQuestion;
 
   factory AnswerResult.fromJson(Map<String, Object?> json) =>
       _$AnswerResultFromJson(json);
@@ -46,11 +46,7 @@ enum QuizType {
   chords,
 }
 
-extension QuizMasterStateExt on QuizMasterState {
-  bool get isFinished => quizCount == currentQuiz?.count;
-}
-
 extension AnswerResultExt on AnswerResult {
-  bool get isCorrect => this is _AnswerResultCorrect;
-  bool get isFinished => this is _AnswerResultFinished;
+  bool get isCorrect => this is AnswerResultCorrect;
+  bool get isFinished => this is AnswerResultFinished;
 }

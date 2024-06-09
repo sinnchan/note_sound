@@ -10,6 +10,7 @@ import 'package:note_sound/presentation/ui/pages/debug/debug_select_notes_page.d
 import 'package:note_sound/presentation/ui/pages/debug/debug_sound_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_top_page.dart';
 import 'package:note_sound/presentation/ui/pages/quiz/page.dart';
+import 'package:note_sound/presentation/ui/pages/quiz/result_page.dart';
 import 'package:note_sound/presentation/ui/pages/top_page.dart';
 import 'package:note_sound/presentation/util/context_extensions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -31,8 +32,13 @@ GoRouter goRouter(GoRouterRef ref) {
     TypedGoRoute<NoteRoute>(
       path: 'notes',
       routes: [
-        TypedGoRoute<NoteLessonRoute>(
+        TypedGoRoute<NoteQuizRoute>(
           path: 'lesson/:number',
+          routes: [
+            TypedGoRoute<NoteQuizResultRoute>(
+              path: 'result',
+            ),
+          ],
         ),
       ],
     ),
@@ -82,15 +88,14 @@ class NoteRoute extends GoRouteData with CLogger {
   }
 }
 
-class NoteLessonRoute extends GoRouteData with CLogger {
+class NoteQuizRoute extends GoRouteData with CLogger {
   final int number;
 
-  NoteLessonRoute(this.number);
+  NoteQuizRoute(this.number);
 
   @override
   FutureOr<String?> redirect(BuildContext context, GoRouterState state) async {
     final masterState = await context.read(quizMasterProvider.future);
-
     if (masterState.entries.isEmpty) {
       // TODO: 正しいpathに修正
       final location = DebugPitchTraningRoute().location;
@@ -104,6 +109,30 @@ class NoteLessonRoute extends GoRouteData with CLogger {
   @override
   Widget build(BuildContext context, GoRouterState state) {
     return QuizPage(type: QuizType.notes);
+  }
+}
+
+class NoteQuizResultRoute extends GoRouteData with CLogger {
+  final int number;
+
+  NoteQuizResultRoute(this.number);
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) async {
+    final masterState = await context.read(quizMasterProvider.future);
+    if (masterState.currentQuiz != null) {
+      // TODO: 正しいpathに修正
+      final location = DebugPitchTraningRoute().location;
+      logger.i('redirect to $location');
+      return location;
+    }
+
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const NoteQuizResultPage();
   }
 }
 

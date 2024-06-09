@@ -1,44 +1,44 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
 
-part 'lesson_data.freezed.dart';
-part 'lesson_data.g.dart';
+part 'quiz_data.freezed.dart';
+part 'quiz_data.g.dart';
 
 @freezed
-class LessonData with _$LessonData {
-  const factory LessonData({
+class QuizData with _$QuizData {
+  const factory QuizData({
     required String version,
     required DateTime updatedAt,
-    required List<NoteLesson> note,
-  }) = _LessonData;
+    required List<NoteQuiz> note,
+  }) = _QuizData;
 
-  factory LessonData.fromJson(Map<String, Object?> json) =>
-      _$LessonDataFromJson(json);
+  factory QuizData.fromJson(Map<String, Object?> json) =>
+      _$QuizDataFromJson(json);
 }
 
 @freezed
-class NoteLesson with _$NoteLesson {
-  const factory NoteLesson({
+class NoteQuiz with _$NoteQuiz {
+  const factory NoteQuiz({
     required String title,
     required String description,
-    required List<Lesson> lessons,
-  }) = _NoteLesson;
+    required List<Quiz> quizList,
+  }) = _NoteQuiz;
 
-  factory NoteLesson.fromJson(Map<String, Object?> json) =>
-      _$NoteLessonFromJson(json);
+  factory NoteQuiz.fromJson(Map<String, Object?> json) =>
+      _$NoteQuizFromJson(json);
 }
 
 @freezed
-class Lesson with _$Lesson {
-  const factory Lesson({
+class Quiz with _$Quiz {
+  const factory Quiz({
     required String title,
     String? description,
     required int questions,
     int? choices,
     required List<QuizEntry> entries,
-  }) = _Lesson;
+  }) = _Quiz;
 
-  factory Lesson.fromJson(Map<String, Object?> json) => _$LessonFromJson(json);
+  factory Quiz.fromJson(Map<String, Object?> json) => _$QuizFromJson(json);
 }
 
 // class _QuizEntryConverter implements JsonConverter<List<QuizEntry>, String> {

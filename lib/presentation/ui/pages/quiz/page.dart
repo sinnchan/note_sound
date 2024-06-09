@@ -1,5 +1,6 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/sound/velocity.dart' as sound;
 import 'package:go_router/go_router.dart';
@@ -11,6 +12,7 @@ import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/infrastructure/sound/player/player.dart';
 import 'package:note_sound/infrastructure/sound/synthesizer/synthesizer.dart';
+import 'package:note_sound/presentation/route/router.dart';
 import 'package:note_sound/presentation/ui/pages/quiz/choice_provider.dart';
 import 'package:note_sound/presentation/ui/widgets/buttons.dart';
 import 'package:note_sound/presentation/util/list_extensions.dart';
@@ -26,9 +28,6 @@ class QuizPage extends HookConsumerWidget with CLogger {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(quizMasterProvider).valueOrNull;
-    final master = ref.watch(quizMasterProvider.notifier);
-    final choice = ref.watch(choiceProvider);
-    final choiceNotifier = ref.watch(choiceProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -83,14 +82,7 @@ class QuizPage extends HookConsumerWidget with CLogger {
             flex: 2,
             child: Center(
               child: ElevatedButton(
-                onPressed: choice != null
-                    ? () async {
-                        final result = await master.answer(choice);
-                        if (result.isCorrect || result.isFinished) {
-                          choiceNotifier.clear();
-                        } else {}
-                      }
-                    : null,
+                onPressed: _choiceHandler(context, ref),
                 child: const Text('決定'),
               ),
             ),
@@ -102,6 +94,26 @@ class QuizPage extends HookConsumerWidget with CLogger {
         ],
       ),
     );
+  }
+
+  Future<void> Function()? _choiceHandler(BuildContext context, WidgetRef ref) {
+    return ref.watch(choiceProvider)?.let((choice) {
+      return () async {
+        final master = ref.read(quizMasterProvider.notifier);
+        final choiceNotifier = ref.read(choiceProvider.notifier);
+
+        switch (await master.answer(choice)) {
+          case AnswerResultCorrect():
+            choiceNotifier.clear();
+          case AnswerResultWrong():
+            break;
+          case AnswerResultFinished():
+            NoteQuizResultRoute(0).go(context);
+          case AnswerResultNoQuestion():
+            break;
+        }
+      };
+    });
   }
 
   Widget _disableChoiceButton(WidgetRef ref) {

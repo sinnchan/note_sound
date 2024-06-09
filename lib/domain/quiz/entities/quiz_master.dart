@@ -10,6 +10,7 @@ import 'package:note_sound/domain/util.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_master_repository.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_target_repository.dart';
+import 'package:note_sound/presentation/ui/pages/quiz/choice_provider.dart';
 import 'package:note_sound/presentation/ui/pages/quiz/correct_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -73,15 +74,22 @@ class QuizMaster extends _$QuizMaster with CLogger {
 
     if (correct) {
       logger.i('correct!!');
-
-      if (state.isFinished) {
-        return const AnswerResult.finished();
-      } else {
-        await nextQuestion();
-      }
+      this.state = AsyncValue.data(
+        state.copyWith(correctCount: state.correctCount + 1),
+      );
     } else {
       logger.i('wrong..');
     }
+
+    if (state.quizCount == state.currentQuiz?.count) {
+      this.state = AsyncValue.data(
+        state.copyWith(currentQuiz: null),
+      );
+      return const AnswerResult.finished();
+    }
+
+    await nextQuestion();
+    ref.read(choiceProvider.notifier).clear();
 
     return correct ? const AnswerResult.correct() : const AnswerResult.wrong();
   }
