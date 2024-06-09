@@ -3,7 +3,7 @@ import 'dart:math';
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/providers.dart';
-import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
+import 'package:note_sound/domain/quiz/value/quiz_entry_target.dart';
 import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/domain/util.dart';
@@ -52,7 +52,7 @@ class QuizMaster extends _$QuizMaster with CLogger {
     await nextQuestion(first: true);
   }
 
-  Future<AnswerResult> answer(QuizEntry answer) async {
+  Future<AnswerResult> answer(QuizEntryTarget answer) async {
     logger.d({
       'answer()': {
         'arg1': answer.toJson(),
@@ -140,7 +140,7 @@ class QuizMaster extends _$QuizMaster with CLogger {
     return QuizMasterState(
       entries: targets
           .map((number) => Note(number: number))
-          .map((note) => QuizEntry.note(note))
+          .map((note) => QuizEntryTarget.note(note))
           .toList(),
       currentQuiz: null,
       quizCount: questionCount,
@@ -149,7 +149,7 @@ class QuizMaster extends _$QuizMaster with CLogger {
     );
   }
 
-  static List<QuizEntry> createRandomNoteEntries({
+  static List<QuizEntryTarget> createRandomNoteEntries({
     required int count,
     int max = Note.max,
     int min = Note.min,
@@ -163,7 +163,7 @@ class QuizMaster extends _$QuizMaster with CLogger {
       notes.add(note);
     }
 
-    final entries = notes.map((e) => QuizEntry.note(e)).toList();
+    final entries = notes.map((e) => QuizEntryTarget.note(e)).toList();
     if (isEnabledShuffle) {
       entries.shuffle();
     } else {

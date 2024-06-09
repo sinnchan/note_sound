@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
+import 'package:note_sound/domain/quiz/value/quiz_entry_target.dart';
 
 part 'quiz_data.freezed.dart';
 part 'quiz_data.g.dart';
@@ -35,7 +35,7 @@ class Quiz with _$Quiz {
     String? description,
     required int questions,
     int? choices,
-    required List<QuizEntry> entries,
+    required List<QuizEntryTarget> entries,
   }) = _Quiz;
 
   factory Quiz.fromJson(Map<String, Object?> json) => _$QuizFromJson(json);

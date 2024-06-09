@@ -1,4 +1,4 @@
-import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
+import 'package:note_sound/domain/quiz/value/quiz_entry_target.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'choice_provider.g.dart';
@@ -6,11 +6,11 @@ part 'choice_provider.g.dart';
 @riverpod
 class Choice extends _$Choice {
   @override
-  QuizEntry? build() {
+  QuizEntryTarget? build() {
     return null;
   }
 
-  void choice(QuizEntry entry) {
+  void choice(QuizEntryTarget entry) {
     state = entry;
   }
 

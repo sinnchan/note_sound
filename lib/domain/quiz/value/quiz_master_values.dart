@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
+import 'package:note_sound/domain/quiz/value/quiz_entry_target.dart';
 
 part 'quiz_master_values.freezed.dart';
 part 'quiz_master_values.g.dart';
@@ -7,7 +7,7 @@ part 'quiz_master_values.g.dart';
 @freezed
 class QuizMasterState with _$QuizMasterState {
   const factory QuizMasterState({
-    required List<QuizEntry> entries,
+    required List<QuizEntryTarget> entries,
     required CurrentQuiz? currentQuiz,
     required bool isLoop,
     required int quizCount,
@@ -22,8 +22,8 @@ class QuizMasterState with _$QuizMasterState {
 class CurrentQuiz with _$CurrentQuiz {
   const factory CurrentQuiz({
     required int count,
-    required QuizEntry entry,
-    required List<QuizEntry> choices,
+    required QuizEntryTarget entry,
+    required List<QuizEntryTarget> choices,
   }) = _CurrentQuiz;
 
   factory CurrentQuiz.fromJson(Map<String, Object?> json) =>

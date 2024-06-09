@@ -1,12 +1,11 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/sound/velocity.dart' as sound;
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
-import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
+import 'package:note_sound/domain/quiz/value/quiz_entry_target.dart';
 import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
@@ -204,7 +203,7 @@ class _SoundButton extends HookConsumerWidget {
 }
 
 class _ChoiceButton extends HookConsumerWidget {
-  final QuizEntry entry;
+  final QuizEntryTarget entry;
 
   const _ChoiceButton(this.entry);
 
