@@ -41,26 +41,24 @@ void main() {
     test('flat', () {
       expect(Note.c.flat.number, 59);
       expect(Note.c.flat.name(), 'B');
-      expect(Note.c.flat.flat, Note.a.sharp.shift(octave: -1));
+      expect(Note.c.flat.flat, Note.a.sharp.shiftOctave(-1));
     });
 
     test('shift', () {
-      expect(Note.c.shift(octave: 1), const Note(number: 72));
+      expect(Note.c.shiftOctave(1), const Note(number: 72));
     });
 
     test('fromName', () {
       expect(Note.fromName('C'), Note.c);
       expect(Note.fromName('C♯'), Note.c.sharp);
       expect(Note.fromName('C♭'), Note.c.flat);
-
-      expect(Note.fromName('C', 3), Note.c.shift(octave: -1));
-      expect(Note.fromName('C♯', 3), Note.c.sharp.shift(octave: -1));
-      expect(Note.fromName('C♭', 3), Note.c.flat.shift(octave: -1));
-
+      expect(Note.fromName('C', 3), Note.c.shiftOctave(-1));
+      expect(Note.fromName('C♯', 3), Note.c.sharp.shiftOctave(-1));
+      expect(Note.fromName('C#', 3), Note.c.sharp.shiftOctave(-1));
+      expect(Note.fromName('C♭', 3), Note.c.flat.shiftOctave(-1));
+      expect(Note.fromName('Cb', 3), Note.c.flat.shiftOctave(-1));
       expect(Note.fromName('C', -1), const Note(number: 0));
-
       expect(Note.fromName('C6'), null);
-
       expect(Note.fromName('C6'), null);
       expect(Note.fromName('C7(13)'), null);
       expect(Note.fromName('C7(9)'), null);

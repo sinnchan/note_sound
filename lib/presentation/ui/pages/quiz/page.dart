@@ -1,42 +1,31 @@
 import 'package:dart_scope_functions/dart_scope_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:note_sound/domain/logger/logger.dart';
+import 'package:note_sound/domain/quiz/value/answer_result.dart';
 import 'package:note_sound/domain/sound/velocity.dart' as sound;
 import 'package:go_router/go_router.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
-import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
-import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
+import 'package:note_sound/domain/quiz/value/quiz_entry_target.dart';
+import 'package:note_sound/domain/quiz/value/quiz_master_state.dart';
 import 'package:note_sound/domain/sound/note.dart';
 import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/infrastructure/sound/player/player.dart';
 import 'package:note_sound/infrastructure/sound/synthesizer/synthesizer.dart';
+import 'package:note_sound/presentation/route/router.dart';
+import 'package:note_sound/presentation/ui/pages/quiz/choice_provider.dart';
 import 'package:note_sound/presentation/ui/widgets/buttons.dart';
 import 'package:note_sound/presentation/util/list_extensions.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'quiz_questions_page.g.dart';
-
-@riverpod
-class _Choice extends _$Choice {
-  @override
-  QuizEntry? build() {
-    return null;
-  }
-
-  void choice(QuizEntry entry) {
-    state = entry;
-  }
-
-  void clear() {
-    state = null;
-  }
+enum QuizType {
+  notes,
+  chords,
 }
 
-class QuizQuestionsPage extends HookConsumerWidget with CLogger {
+class QuizPage extends HookConsumerWidget with CLogger {
   final QuizType type;
 
-  QuizQuestionsPage({
+  QuizPage({
     super.key,
     required this.type,
   });
@@ -44,9 +33,6 @@ class QuizQuestionsPage extends HookConsumerWidget with CLogger {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(quizMasterProvider).valueOrNull;
-    final master = ref.watch(quizMasterProvider.notifier);
-    final choice = ref.watch(_choiceProvider);
-    final choiceNotifier = ref.watch(_choiceProvider.notifier);
 
     return Scaffold(
       appBar: AppBar(
@@ -66,7 +52,7 @@ class QuizQuestionsPage extends HookConsumerWidget with CLogger {
             flex: 5,
             child: Stack(
               children: [
-                const _SampleButton(),
+                const _SoundButton(),
                 Container(
                   padding: const EdgeInsets.all(12),
                   alignment: Alignment.centerRight,
@@ -90,10 +76,12 @@ class QuizQuestionsPage extends HookConsumerWidget with CLogger {
             padding: const EdgeInsets.symmetric(horizontal: 48),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: state?.currentQuestion?.choices
-                      .map((e) => _ChoiceButton(e))
-                      .toList()
-                      .withSeparater(const SizedBox(height: 16)) ??
+              children: state?.currentQuiz?.let((currentState) {
+                    return currentState.choices
+                        .map((e) => _ChoiceButton(e))
+                        .toList()
+                        .withSeparater(const SizedBox(height: 16));
+                  }) ??
                   [],
             ),
           ),
@@ -101,14 +89,7 @@ class QuizQuestionsPage extends HookConsumerWidget with CLogger {
             flex: 2,
             child: Center(
               child: ElevatedButton(
-                onPressed: choice != null
-                    ? () async {
-                        final result = await master.answer(choice);
-                        if (result.isCorrect || result.isFinished) {
-                          choiceNotifier.clear();
-                        } else {}
-                      }
-                    : null,
+                onPressed: _choiceHandler(context, ref),
                 child: const Text('決定'),
               ),
             ),
@@ -120,6 +101,26 @@ class QuizQuestionsPage extends HookConsumerWidget with CLogger {
         ],
       ),
     );
+  }
+
+  Future<void> Function()? _choiceHandler(BuildContext context, WidgetRef ref) {
+    return ref.watch(choiceProvider)?.let((choice) {
+      return () async {
+        final master = ref.read(quizMasterProvider.notifier);
+        final choiceNotifier = ref.read(choiceProvider.notifier);
+
+        switch (await master.answer(choice)) {
+          case AnswerResultCorrect():
+            choiceNotifier.clear();
+          case AnswerResultWrong():
+            break;
+          case AnswerResultFinished():
+            NoteQuizResultRoute(0).go(context);
+          case AnswerResultNoQuestion():
+            break;
+        }
+      };
+    });
   }
 
   Widget _disableChoiceButton(WidgetRef ref) {
@@ -147,20 +148,20 @@ class QuizQuestionsPage extends HookConsumerWidget with CLogger {
   }
 
   Widget? _progress(QuizMasterState? state) {
-    final current = state?.currentQuestion;
-    if (state == null || current == null || state.questionCount <= 0) {
+    final current = state?.currentQuiz;
+    if (state == null || current == null || state.entries.isEmpty) {
       return null;
     }
     return Row(
       children: [
         Expanded(
           child: LinearProgressIndicator(
-            value: current.count / state.questionCount,
+            value: state.quizIndex / state.entries.length,
           ),
         ),
         const SizedBox(width: 12),
         Text(
-          '${current.count} / ${state.questionCount}',
+          '${state.quizIndex} / ${state.entries.length}',
           style: const TextStyle(fontSize: 16),
         )
       ],
@@ -168,8 +169,8 @@ class QuizQuestionsPage extends HookConsumerWidget with CLogger {
   }
 }
 
-class _SampleButton extends HookConsumerWidget {
-  const _SampleButton();
+class _SoundButton extends HookConsumerWidget {
+  const _SoundButton();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -180,14 +181,14 @@ class _SampleButton extends HookConsumerWidget {
 
     Future<void> notesOn() async {
       final synth = await ref.read(synthesizerProvider.future);
-      master?.currentQuestion?.question.toNotes().let((notes) {
+      master?.currentQuiz?.target.toNotes().let((notes) {
         synth.notesOn(notes, sound.Velocity.max());
       });
     }
 
     Future<void> notesOff() async {
       final synth = await ref.read(synthesizerProvider.future);
-      master?.currentQuestion?.question.toNotes().let((notes) {
+      master?.currentQuiz?.target.toNotes().let((notes) {
         synth.notesOff(notes);
       });
     }
@@ -210,18 +211,18 @@ class _SampleButton extends HookConsumerWidget {
 }
 
 class _ChoiceButton extends HookConsumerWidget {
-  final QuizEntry entry;
+  final QuizEntryTarget entry;
 
   const _ChoiceButton(this.entry);
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final selected = ref.watch(_choiceProvider);
+    final selected = ref.watch(choiceProvider);
 
     return BorderButton(
       enableBorder: selected == entry,
       onTapUp: (_) async {
-        ref.read(_choiceProvider.notifier).choice(entry);
+        ref.read(choiceProvider.notifier).choice(entry);
 
         if (ref.read(enableChoiceSoundProvider)) {
           final synth = await ref.read(synthesizerProvider.future);
@@ -243,7 +244,7 @@ class _ChoiceButton extends HookConsumerWidget {
       child: Center(
         child: Text(
           entry.when(
-            note: (note) => note.name(),
+            note: (note) => note.fullName(),
             chord: (chord) => chord.toString(),
           ),
         ),

@@ -7,6 +7,7 @@ import 'package:note_sound/infrastructure/quiz/quiz_info_repository.dart';
 import 'package:note_sound/presentation/route/router.dart';
 import 'package:note_sound/presentation/util/l10n_mixin.dart';
 import 'package:note_sound/presentation/ui/widgets/expandable/expandable_card.dart';
+import 'package:rxdart/rxdart.dart';
 
 class DebugPitchTraningPage extends HookConsumerWidget {
   const DebugPitchTraningPage({super.key});
@@ -34,12 +35,22 @@ class DebugPitchTraningPage extends HookConsumerWidget {
 
   ExpandableCard _pitchEarTraningCard(BuildContext context, WidgetRef ref) {
     final repository = ref.watch(quizInfoRepositoryProvider).valueOrNull;
-    final quizNoteCount = useState(0);
+    final quizCount = useState(0);
+    final choiceCount = useState(0);
 
     useEffect(
-      () => repository?.quizNoteCountStream.listen((count) {
-        quizNoteCount.value = count;
-      }).cancel,
+      () {
+        final subsc = CompositeSubscription();
+
+        repository?.quizCountStream.listen((count) {
+          quizCount.value = count;
+        }).addTo(subsc);
+        repository?.choiceCountStream.listen((count) {
+          choiceCount.value = count;
+        }).addTo(subsc);
+
+        return subsc.cancel;
+      },
       [repository],
     );
 
@@ -54,11 +65,22 @@ class DebugPitchTraningPage extends HookConsumerWidget {
           Divider(indent: padding),
           input(
             text: context.l10n.quiz_count,
-            initValue: quizNoteCount.value.toString(),
+            initValue: quizCount.value.toString(),
             onChanged: (value) async {
               final repo = await ref.read(quizInfoRepositoryProvider.future);
               return int.tryParse(value)?.let((it) {
-                return repo.setQuizNoteCount(it);
+                return repo.setQuizCount(it);
+              });
+            },
+          ),
+          Divider(indent: padding),
+          input(
+            text: 'Choice count',
+            initValue: choiceCount.value.toString(),
+            onChanged: (value) async {
+              final repo = await ref.read(quizInfoRepositoryProvider.future);
+              return int.tryParse(value)?.let((it) {
+                return repo.setChoiceCount(it);
               });
             },
           ),
@@ -66,7 +88,7 @@ class DebugPitchTraningPage extends HookConsumerWidget {
           startButton(() async {
             await ref.read(quizMasterProvider.notifier).start();
             if (context.mounted) {
-              QuizNotesRoute().go(context);
+              NoteRoute().go(context);
             }
           }),
         ],

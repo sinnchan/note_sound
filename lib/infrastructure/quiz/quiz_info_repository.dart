@@ -16,30 +16,55 @@ Future<QuizInfoRepository> quizInfoRepository(QuizInfoRepositoryRef ref) async {
 class QuizInfoRepository with CLogger {
   final SharedPreferences prefs;
 
-  final _quizNoteCountStream = BehaviorSubject<int>();
+  final defaultQuizCount = 1;
+  final defaultChoiceCount = 3;
+
+  final _quizCountStream = BehaviorSubject<int>();
+  final _choiceCountStream = BehaviorSubject<int>();
 
   QuizInfoRepository(this.prefs) {
-    _quizNoteCountStream.add(
-      prefs.getInt(PrefsKeys.quizNoteCount) ?? 0,
+    _quizCountStream.add(
+      prefs.getInt(PrefsKeys.quizCount) ?? defaultQuizCount,
+    );
+    _choiceCountStream.add(
+      prefs.getInt(PrefsKeys.choiceCount) ?? defaultChoiceCount,
     );
   }
 
-  Stream<int> get quizNoteCountStream {
-    logger.d('get quizNoteCountStream');
-    return _quizNoteCountStream;
+  Stream<int> get quizCountStream {
+    logger.d('get quizCountStream');
+    return _quizCountStream;
   }
 
-  Future<void> setQuizNoteCount(int count) async {
+  Future<void> setQuizCount(int count) async {
     logger.d('setQuizNoteCount($count)');
 
-    final success = await prefs.setInt(PrefsKeys.quizNoteCount, count);
+    final success = await prefs.setInt(PrefsKeys.quizCount, count);
     if (success) {
-      _quizNoteCountStream.add(count);
+      _quizCountStream.add(count);
     }
   }
 
-  Future<int> getQuizNoteCount() async {
-    return prefs.getInt(PrefsKeys.quizNoteCount) ?? 0;
+  Future<int> getQuizCount() async {
+    return prefs.getInt(PrefsKeys.quizCount) ?? defaultQuizCount;
+  }
+
+  Stream<int> get choiceCountStream {
+    logger.d('get choiceCountStream');
+    return _choiceCountStream;
+  }
+
+  Future<void> setChoiceCount(int count) async {
+    logger.d('setChoiceCount($count)');
+
+    final success = await prefs.setInt(PrefsKeys.choiceCount, count);
+    if (success) {
+      _choiceCountStream.add(count);
+    }
+  }
+
+  Future<int> getChoiceCount() async {
+    return prefs.getInt(PrefsKeys.choiceCount) ?? defaultChoiceCount;
   }
 }
 

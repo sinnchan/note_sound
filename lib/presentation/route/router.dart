@@ -4,12 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:note_sound/domain/logger/logger.dart';
 import 'package:note_sound/domain/quiz/entities/quiz_master.dart';
-import 'package:note_sound/domain/quiz/value/quiz_master_values.dart';
-import 'package:note_sound/presentation/ui/pages/debug/debug_pitch_traning_page.dart';
+import'package:note_sound/presentation/ui/pages/debug/debug_pitch_traning_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_select_notes_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_sound_page.dart';
 import 'package:note_sound/presentation/ui/pages/debug/debug_top_page.dart';
-import 'package:note_sound/presentation/ui/pages/quiz/quiz_questions_page.dart';
+import 'package:note_sound/presentation/ui/pages/quiz/page.dart';
+import 'package:note_sound/presentation/ui/pages/quiz/result_page.dart';
 import 'package:note_sound/presentation/ui/pages/top_page.dart';
 import 'package:note_sound/presentation/util/context_extensions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -28,8 +28,18 @@ GoRouter goRouter(GoRouterRef ref) {
 @TypedGoRoute<TopRoute>(
   path: '/',
   routes: [
-    TypedGoRoute<QuizNotesRoute>(
-      path: 'quiz/notes',
+    TypedGoRoute<NoteRoute>(
+      path: 'notes',
+      routes: [
+        TypedGoRoute<NoteQuizRoute>(
+          path: 'lesson/:number',
+          routes: [
+            TypedGoRoute<NoteQuizResultRoute>(
+              path: 'result',
+            ),
+          ],
+        ),
+      ],
     ),
     TypedGoRoute<DebugTopRoute>(
       path: 'debug',
@@ -56,7 +66,7 @@ class TopRoute extends GoRouteData {
   }
 }
 
-class QuizNotesRoute extends GoRouteData with CLogger {
+class NoteRoute extends GoRouteData with CLogger {
   @override
   FutureOr<String?> redirect(BuildContext context, GoRouterState state) async {
     final masterState = await context.read(quizMasterProvider.future);
@@ -73,7 +83,42 @@ class QuizNotesRoute extends GoRouteData with CLogger {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return QuizQuestionsPage(type: QuizType.notes);
+    return QuizPage(type: QuizType.notes);
+  }
+}
+
+class NoteQuizRoute extends GoRouteData with CLogger {
+  final int number;
+
+  NoteQuizRoute(this.number);
+
+  @override
+  FutureOr<String?> redirect(BuildContext context, GoRouterState state) async {
+    final masterState = await context.read(quizMasterProvider.future);
+    if (masterState.entries.isEmpty) {
+      // TODO: 正しいpathに修正
+      final location = DebugPitchTraningRoute().location;
+      logger.i('redirect to $location');
+      return location;
+    }
+
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return QuizPage(type: QuizType.notes);
+  }
+}
+
+class NoteQuizResultRoute extends GoRouteData with CLogger {
+  final int number;
+
+  NoteQuizResultRoute(this.number);
+
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    return const NoteQuizResultPage();
   }
 }
 

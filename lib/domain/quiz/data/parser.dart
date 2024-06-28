@@ -1,11 +1,11 @@
 import 'package:note_sound/domain/logger/logger.dart';
-import 'package:note_sound/domain/quiz/value/quiz_entry.dart';
+import 'package:note_sound/domain/quiz/value/quiz_entry_target.dart';
 import 'package:note_sound/domain/sound/note.dart';
 
 class EntryDataPaser with CLogger {
   EntryDataPaser();
 
-  QuizEntry? parse(String entry) {
+  QuizEntryTarget? parse(String entry) {
     try {
       final splited = entry.split(':');
       final sound = splited.first;
@@ -17,13 +17,13 @@ class EntryDataPaser with CLogger {
 
       final note = Note.fromName(sound, octave);
       if (note != null) {
-        return QuizEntry.note(note);
+        return QuizEntryTarget.note(note);
       }
 
-      // TODO
+      // TODO: parser実装する
       throw 1;
     } catch (e, st) {
-      logger.w('failed to parse: $entry', error: e, stackTrace: st);
+      logger.w('failed to parse: $entry', e, st);
       return null;
     }
   }

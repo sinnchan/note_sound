@@ -3,8 +3,8 @@ import 'package:flutter_gen/gen_l10n/l10n.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:note_sound/domain/logger/logger.dart';
-import 'package:note_sound/presentation/providers/correct_provider.dart';
 import 'package:note_sound/presentation/route/router.dart';
+import 'package:note_sound/presentation/ui/pages/quiz/correct_provider.dart';
 
 final seedColorProvider = StateProvider((ref) {
   return Colors.green;
